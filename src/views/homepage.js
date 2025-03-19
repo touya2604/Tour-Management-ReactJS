@@ -30,7 +30,13 @@ class HomePage extends React.Component {
             </button>
             <form id="formInput">
               <input id="inputField" type="text" placeholder="Nhập điểm đến" />
-              <button id="inputButton" type="submit">
+              <button
+                id="inputButton"
+                type="button"
+                onClick={() => {
+                  console.log(document.getElementById("inputField").value);
+                }}
+              >
                 Tìm kiếm
               </button>
             </form>
