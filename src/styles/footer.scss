@@ -1,0 +1,57 @@
+.container-footer{
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    background-color: #C1D8C3;
+    position: fixed;
+    column-gap: 25em;
+    #image-icon{
+        margin-left: 30px;
+        #image-footer{
+            width: 300px;
+            img{
+                width: 239px;
+                height: 105px;
+            }
+        }
+        #icon-footer{
+            display: flex;
+            width: 100px;
+            margin-left: 15px;
+            column-gap: 1em;
+            .icon{
+                width: 34px;
+                height: 34px;
+            }
+        }
+    }
+    #infor-footer{
+        display:flex;
+        column-gap: 10em;
+        .block{
+            width: 10em;
+            height: 100px;
+            .Tieude{
+                font-weight: bold;
+                margin-bottom:0;
+            }
+            .list-item{
+                list-style-type: none;
+                padding:0;
+                li{
+                    margin-bottom:10px; 
+                }
+            }
+
+            #TinhDuLich{
+                display:flex;
+                width: 300px;
+                column-gap: 1.5em;
+            }
+        }
+        #information{
+            width: auto;
+        }
+    }
+
+}
