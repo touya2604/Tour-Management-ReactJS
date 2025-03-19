@@ -23,6 +23,11 @@ body{
     }
     .nav-header{
         margin: auto 10px;
+        #homepage{
+            background-color: white;
+            border-radius: 8px;
+            padding: 5px 5px;
+        }
         a{
             text-decoration: none;
             margin: 0 5px;

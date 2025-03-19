@@ -8,7 +8,9 @@ class Header extends React.Component {
           <img className="image-header" src={logoHead} alt="logoHeader" />
         </div>
         <nav className="nav-header">
-          <a href="hi">Trang chủ</a>
+          <a href="hi" id="homepage">
+            Trang chủ
+          </a>
           <a href="hi">Tour du lịch</a>
           <a href="hi">Tin tức</a>
           <a href="hi">Liên hệ</a>
