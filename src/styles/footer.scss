@@ -4,6 +4,7 @@
     height: 100vh;
     background-color: #C1D8C3;
     position: fixed;
+    
     column-gap: 25em;
     #image-icon{
         margin-left: 30px;
@@ -27,7 +28,10 @@
     }
     #infor-footer{
         display:flex;
+        flex-wrap: wrap;
         column-gap: 10em;
+        gap: 2em;
+        width: 500px;
         .block{
             width: 10em;
             height: 100px;
