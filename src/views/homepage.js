@@ -6,15 +6,12 @@ import React from "react";
 import Footer from "../components/footer";
 import Header from "../components/header";
 class HomePage extends React.Component {
-  state = {
-    check: "1",
-    // 1 - Admin / 0 - Customer
-  };
   render() {
+    let { checkLog } = this.props;
     return (
       <>
         <header>
-          <Header checkLog={this.state.check} />
+          <Header checkLog={checkLog} />
         </header>
         <main>
           <div id="box-container">
