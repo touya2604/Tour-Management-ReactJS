@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "../styles/sign.scss";
 
-const LoginForm = () => {
+const LoginForm = ({ setRole }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -18,8 +20,18 @@ const LoginForm = () => {
         email,
         password,
       });
+
+      const { token, role } = response.data;
+
+      // Lưu token và role vào localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
+
+      // Cập nhật role vào App.js
+      setRole(role);
+
       alert("Đăng nhập thành công!");
-      console.log("Token:", response.data.token); // Lưu token nếu cần
+      navigate("/"); // Chuyển hướng về trang chủ
     } catch (err) {
       setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
     }

@@ -1,0 +1,40 @@
+#container-account{
+    #right-bar{
+        #right-bar-bottom-delete{
+            width: 900px;
+            height: 100%;
+            background-color: #E7E7E7;
+            display: grid;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            // justify-content: center;
+            align-items: center;
+            height: auto;
+        }
+        #delete-alert{
+            color: red;
+            font-size: 36px;
+            font-weight: bolder;
+
+        }
+        .delete-note{
+            font-size: 20px;
+        }
+        #delete-button{
+            font-size: 20px;
+            border-radius: 12px;
+            background-color: red;
+            padding: 10px;
+            border: none;
+            color: white;
+            margin-bottom: 20px;
+            cursor: pointer;
+            &:hover{
+                background-color: white;
+                color:black
+            }
+        }
+    }
+}

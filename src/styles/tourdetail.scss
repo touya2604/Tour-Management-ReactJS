@@ -1,0 +1,90 @@
+.tour-detail {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  
+    .tour-header {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      
+      .tour-image {
+        width: 50%;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+  
+      .tour-info {
+        flex: 1;
+  
+        .tour-title {
+          font-size: 28px;
+          font-weight: bold;
+        }
+  
+        .tour-price {
+          font-size: 24px;
+          color: #008000;
+          font-weight: bold;
+          margin: 10px 0;
+        }
+  
+        .add-to-cart {
+          background-color: #008000;
+          color: white;
+          padding: 10px 15px;
+          border: none;
+          cursor: pointer;
+          border-radius: 5px;
+          font-size: 16px;
+          transition: 0.3s;
+  
+          &:hover {
+            background-color: #006400;
+          }
+        }
+      }
+    }
+  
+    .tour-description {
+      margin-top: 20px;
+  
+      h2 {
+        font-size: 22px;
+        font-weight: bold;
+      }
+  
+      p {
+        font-size: 16px;
+        line-height: 1.5;
+      }
+    }
+  
+    .tour-reviews {
+      margin-top: 20px;
+  
+      h2 {
+        font-size: 22px;
+        font-weight: bold;
+      }
+  
+      .review-card {
+        background: #f9f9f9;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 5px;
+  
+        .review-text {
+          font-size: 16px;
+        }
+  
+        .review-user {
+          font-size: 14px;
+          color: gray;
+        }
+      }
+    }
+  }
+  

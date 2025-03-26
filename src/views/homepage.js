@@ -4,15 +4,12 @@ import "../styles/header.scss";
 import "../styles/footer.scss";
 import React from "react";
 import Footer from "../components/footer";
-import Header from "../components/header";
 import { useNavigate } from "react-router-dom";
-const HomePage = (checkLog) => {
+const HomePage = () => {
   let navigate = useNavigate();
   return (
     <>
-      <header>
-        <Header checkLog={checkLog} />
-      </header>
+      <header></header>
       <main>
         <div id="box-container">
           <h1 id="TieuDeWeb">Khám phá thế giới cùng FMT</h1>
@@ -43,7 +40,6 @@ const HomePage = (checkLog) => {
           </form>
         </div>
       </main>
-
       <footer>
         <Footer />
       </footer>
