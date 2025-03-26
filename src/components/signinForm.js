@@ -34,9 +34,6 @@ class SignInForm extends React.Component {
             <button id="buttonInput" type="button">
               Đăng ký
             </button>
-            <p>
-              Đã có tài khoản ? <a href="hi">Đăng Nhập</a>
-            </p>
           </form>
         </div>
       </>

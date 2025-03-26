@@ -32,7 +32,11 @@ body{
             border-radius: 8px;
             padding: 5px 5px;
         }
-        a{
+        button{
+            font-size: large;
+            background: none;
+            border: none; 
+            outline: none;
             text-decoration: none;
             margin: 0 5px;
             color: black;

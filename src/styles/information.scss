@@ -1,0 +1,102 @@
+#container-account {
+  
+    #right-bar-bottom{
+    grid-template-columns: repeat(2, auto);
+    grid-template-rows: repeat(3, auto);
+    column-gap: 5em;
+    align-items: end;
+    #left {
+        margin-left: 2em;
+    }
+
+    #right {
+        margin-right: 2em;
+    }
+
+    #left, #right {
+        #change-password {
+        width: 140px;
+        height: 45px;
+        background-color: #E8B931;
+        border: 1px solid #BF6A02;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        &:hover {
+            background-color: #b68f19;
+        }
+        }
+
+        .info-field {
+        width: 100%;
+        height: 40px;
+        border-radius: 8px;
+        border: 2px solid #79747E;
+        padding: 5px 10px;
+        font-size: 16px;
+        background-color: white;
+        transition: border-color 0.3s ease-in-out, background-color 0.3s;
+        
+        &:focus {
+            border-color: #E8B931;
+            background-color: #FFF9E3;
+            outline: none;
+        }
+        }
+
+        .buttonEdit {
+        margin-left: 10px;
+        border-radius: 50%;
+        border: 2px solid #79747E;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        background-color: white;
+
+        &:hover {
+            background-color: #dcdcdc;
+        }
+        }
+
+        #mail, #change-password {
+        margin-bottom: 4em;
+        }
+
+        #mail, #phone, #name {
+        .labelInfo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        #mail-field, #name-field, #phone-field {
+            width: 320px;
+        }
+        }
+    }
+
+    #saveButton {
+        grid-column: 1 / span 2;
+        margin: 20px auto;
+
+        button {
+        border-radius: 50%;
+        border: 2px solid #79747E;
+        width: 70px;
+        height: 70px;
+        cursor: pointer;
+        background-color: white;
+
+        #saveIcon {
+            width: 35px;
+            height: 35px;
+        }
+
+        &:hover {
+            background-color: #dcdcdc;
+        }
+        }
+    }
+    }
+}
+  
+  
