@@ -3,27 +3,19 @@ import axios from "axios";
 import "../styles/cart.scss";
 
 const Cart = () => {
-  const [cart, setCart] = useState([
-    {
-      id: 1,
-      name: "ĐÀ NẴNG – HỘI AN – BÀ NÀ – HUẾ",
-      price: 3990000,
-      quantity: 1,
-      image: "tour1.jpg",
-    },
-    {
-      id: 2,
-      name: "ĐÀ NẴNG – HỘI AN – BÀ NÀ – HUẾ – PHONG NHA",
-      price: 4550000,
-      quantity: 2,
-      image: "tour2.jpg",
-    },
-  ]);
+  const [cart, setCart] = useState([]);
   const [vouchers, setVouchers] = useState([]);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [showVoucherList, setShowVoucherList] = useState(false);
 
   useEffect(() => {
+    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
+    const fixedCart = savedCart.map((item) => ({
+      ...item,
+      price: Number(item.price),
+      quantity: Number(item.quantity),
+    }));
+    setCart(fixedCart);
     if (showVoucherList) {
       axios
         .get("http://localhost:5000/vouchers") //Thay bằng của ô
@@ -33,17 +25,19 @@ const Cart = () => {
   }, [showVoucherList]);
 
   const updateQuantity = (id, amount) => {
-    setCart(
-      cart.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + amount) }
-          : item
-      )
+    const updatedCart = cart.map((item) =>
+      item.id === id
+        ? { ...item, quantity: Math.max(1, item.quantity + amount) }
+        : item
     );
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const removeItem = (id) => {
-    setCart(cart.filter((item) => item.id !== id));
+    const updatedCart = cart.filter((item) => item.id !== id);
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const applyVoucher = (voucher) => {
@@ -52,13 +46,16 @@ const Cart = () => {
   };
 
   const totalAmount = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
+    (total, item) =>
+      total + (Number(item.price) || 0) * (Number(item.quantity) || 1),
     0
   );
+
   const discount = selectedVoucher
     ? (totalAmount * selectedVoucher.discount) / 100
     : 0;
   const finalAmount = totalAmount - discount;
+  console.log("Cart data:", cart);
 
   return (
     <>

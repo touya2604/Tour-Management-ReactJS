@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../styles/tourdetail.scss";
 import tours from "../data/tourTest";
-
-const TourDetail = ({ addToCart }) => {
+const TourDetail = () => {
   const { id } = useParams();
   const [tour, setTour] = useState(null);
 
@@ -29,6 +28,26 @@ const TourDetail = ({ addToCart }) => {
   }, [id]);
 
   if (!tour) return <p>Đang tải dữ liệu...</p>;
+  const handleAddToCart = () => {
+    const tourItem = {
+      id: tour.id,
+      name: tour.name,
+      price: tour.price,
+      image: tour.image,
+      quantity: 1,
+    };
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const existingItem = cart.find((item) => item.id === tourItem.id);
+
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push(tourItem);
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("Đã thêm vào giỏ hàng!"); // Hiển thị thông báo
+  };
 
   return (
     <div className="tour-detail">
@@ -37,7 +56,7 @@ const TourDetail = ({ addToCart }) => {
         <div className="tour-info">
           <h1 className="tour-title">{tour.name}</h1>
           <p className="tour-price">{tour.price.toLocaleString()} VNĐ</p>
-          <button className="add-to-cart" onClick={() => addToCart(tour)}>
+          <button className="add-to-cart" onClick={handleAddToCart}>
             Thêm vào giỏ hàng
           </button>
         </div>

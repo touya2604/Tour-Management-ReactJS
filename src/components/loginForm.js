@@ -31,7 +31,7 @@ const LoginForm = ({ setRole }) => {
       setRole(role);
 
       alert("Đăng nhập thành công!");
-      navigate("/"); // Chuyển hướng về trang chủ
+      navigate("/");
     } catch (err) {
       setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
     }

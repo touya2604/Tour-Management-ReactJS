@@ -35,7 +35,10 @@ const App = () => {
         <Route path="/newsletter" element={<News checkAcc={role} />} />
         <Route path="/cart" element={<Cart checkAcc={role} />} />
         <Route path="/vouncher" element={<Vouncher checkAcc={role} />} />
-        <Route path="/tour-detail" element={<TourDetail checkAcc={role} />} />
+        <Route
+          path="/tour-detail/:id"
+          element={<TourDetail checkAcc={role} />}
+        />
       </Routes>
     </Router>
   );

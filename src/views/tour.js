@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/tour.scss";
-import tourMockData from "../data/tourTest";
+import tourTest from "../data/tourTest";
 import { Pagination } from "react-bootstrap";
 
 const itemsPerPage = 6;
@@ -33,8 +33,8 @@ const TourList = () => {
         setFilteredTours(data);
       } catch (error) {
         console.error(error);
-        setTours(tourMockData);
-        setFilteredTours(tourMockData);
+        setTours(tourTest);
+        setFilteredTours(tourTest);
       } finally {
         setLoading(false);
       }
