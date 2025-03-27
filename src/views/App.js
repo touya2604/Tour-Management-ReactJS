@@ -12,6 +12,8 @@ import Vouncher from "./vouncher";
 import DeleteAcc from "./deleteAccount";
 import TourDetail from "./tourdetail";
 import Header from "../components/header";
+import VouncherManage from "./vounchermanage";
+import TourManage from "./tourmanage";
 
 const App = () => {
   const [role, setRole] = useState(localStorage.getItem("role") || "");
@@ -23,7 +25,7 @@ const App = () => {
 
   return (
     <Router>
-      <Header checkLog={role} />
+      <Header checkLog={"0"} />
       <Routes>
         <Route path="/" element={<HomePage checkAcc={role} />} />
         <Route path="/logIn" element={<LogIn setRole={setRole} />} />
@@ -39,6 +41,8 @@ const App = () => {
           path="/tour-detail/:id"
           element={<TourDetail checkAcc={role} />}
         />
+        <Route path="/voucher-manage" element={<VouncherManage />} />
+        <Route path="/tour-manage" element={<TourManage></TourManage>} />
       </Routes>
     </Router>
   );

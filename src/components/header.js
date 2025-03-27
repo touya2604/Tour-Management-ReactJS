@@ -29,12 +29,14 @@ const Header = ({ checkLog }) => {
           </button>
         )}
         {checkLog === "1" ? (
-          <button onClick={() => navigate("/voucher")}>Quản lý vouncher</button>
+          <button onClick={() => navigate("/voucher-manage")}>
+            Quản lý vouncher
+          </button>
         ) : (
           <button onClick={() => navigate("/vouncher")}>Mã giảm giá</button>
         )}
         {checkLog === "1" ? (
-          <button onClick={() => navigate("/tour")}>Quản lý tour</button>
+          <button onClick={() => navigate("/tour-manage")}>Quản lý tour</button>
         ) : (
           <button onClick={() => navigate("/cart")}>Giỏ hàng</button>
         )}

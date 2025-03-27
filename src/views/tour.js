@@ -4,9 +4,8 @@ import "../styles/tour.scss";
 import tourTest from "../data/tourTest";
 import { Pagination } from "react-bootstrap";
 
-const itemsPerPage = 6;
-
 const TourList = () => {
+  const itemsPerPage = 6;
   const [tours, setTours] = useState([]);
   const [filteredTours, setFilteredTours] = useState([]);
   const [loading, setLoading] = useState(true);

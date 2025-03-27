@@ -5,6 +5,8 @@ const tours = [
     image: "https://via.placeholder.com/300x200",
     price: 3190000,
     capacity: 30,
+    timestart: "20/4/2022",
+    timeend: "20/3/2025",
   },
   {
     id: 2,
@@ -12,6 +14,8 @@ const tours = [
     image: "https://via.placeholder.com/300x200",
     price: 6949000,
     capacity: 40,
+    timestart: "20/4/2022",
+    timeend: "20/3/2025",
   },
   {
     id: 3,
@@ -19,6 +23,8 @@ const tours = [
     image: "https://via.placeholder.com/300x200",
     price: 5190000,
     capacity: 25,
+    timestart: "20/4/2022",
+    timeend: "20/3/2025",
   },
   {
     id: 4,
@@ -26,6 +32,8 @@ const tours = [
     image: "https://via.placeholder.com/300x200",
     price: 4990000,
     capacity: 10,
+    timestart: "20/4/2022",
+    timeend: "20/3/2025",
   },
   {
     id: 5,
@@ -33,6 +41,8 @@ const tours = [
     image: "https://via.placeholder.com/300x200",
     price: 10279000,
     capacity: 20,
+    timestart: "20/4/2022",
+    timeend: "20/3/2025",
   },
   {
     id: 6,
@@ -40,6 +50,8 @@ const tours = [
     image: "https://via.placeholder.com/300x200",
     price: 3990000,
     capacity: 30,
+    timestart: "20/4/2022",
+    timeend: "20/3/2025",
   },
 ];
 
