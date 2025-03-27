@@ -73,7 +73,7 @@
   
     .tour-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(6, auto);
       gap: 20px;
       flex: 1;
       .tour-card {
@@ -83,7 +83,7 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         transition: 0.3s;
         overflow: hidden;
-  
+        
         &:hover {
           transform: translateY(-5px);
           box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);

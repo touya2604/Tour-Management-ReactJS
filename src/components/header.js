@@ -16,6 +16,7 @@ const Header = ({ checkLog }) => {
 
   return (
     <div className="container-header">
+      {console.log(checkLog)}
       <div className="container-header-img">
         <img className="image-header" src={logoHead} alt="logoHeader" />
       </div>
