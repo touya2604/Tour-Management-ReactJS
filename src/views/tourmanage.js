@@ -4,6 +4,7 @@ import Ph from "../assets/images/placeholder.jpg";
 import "../styles/tourmanage.scss";
 import tourTest from "../data/tourTest";
 import { useNavigate } from "react-router-dom";
+import Add from "./add";
 const TourManage = () => {
   const [tours, setTours] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,7 +50,8 @@ const TourManage = () => {
         <div id="vouncher-list">
           <div id="vouncher-list-up">
             <h1>Quản lý tour </h1>
-            <button className="buttonUse">Thêm mới tour</button>
+            {/* <button className="buttonUse">Thêm mới tour</button> */}
+            <Add />
           </div>
           <div id="vouncher-list-down">
             {tours.length === 0 ? (
