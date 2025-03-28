@@ -3,14 +3,12 @@ import { Pagination } from "react-bootstrap";
 import Ph from "../assets/images/placeholder.jpg";
 import "../styles/tourmanage.scss";
 import tourTest from "../data/tourTest";
-import { useNavigate } from "react-router-dom";
 import Add from "./add";
 const TourManage = () => {
   const [tours, setTours] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const itemsPerPage = 3;
-  const navigate = useNavigate;
   useEffect(() => {
     const fetchTours = async () => {
       try {

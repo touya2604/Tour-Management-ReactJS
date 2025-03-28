@@ -3,7 +3,7 @@ import { Pagination } from "react-bootstrap";
 import logoVouncher from "../assets/images/logoFoot.png";
 import "../styles/vouncher.scss";
 
-const Vouncher = ({ checkAcc }) => {
+const Vouncher = () => {
   const [vouncherList, setVouncherList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;

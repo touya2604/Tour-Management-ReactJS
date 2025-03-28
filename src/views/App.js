@@ -15,6 +15,7 @@ import Header from "../components/header";
 import VouncherManage from "./vounchermanage";
 import TourManage from "./tourmanage";
 import UserTest from "../data/usertest";
+import TouRCRUD from "../components/tourCUD";
 
 const App = () => {
   const [user, setUser] = useState({});
@@ -73,6 +74,7 @@ const App = () => {
         <Route path="/tour-detail/:id" element={<TourDetail />} />
         <Route path="/voucher-manage" element={<VouncherManage />} />
         <Route path="/tour-manage" element={<TourManage></TourManage>} />
+        <Route path="/tour-crud" element={<TouRCRUD />} />
       </Routes>
     </Router>
   );

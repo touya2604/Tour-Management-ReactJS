@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import "../styles/cart.scss";
 
 const Cart = () => {
@@ -17,9 +16,12 @@ const Cart = () => {
     }));
     setCart(fixedCart);
     if (showVoucherList) {
-      axios
-        .get("http://localhost:5000/vouchers") //Thay bằng của ô
-        .then((response) => setVouchers(response.data))
+      fetch("http://localhost:5000/vouchers")
+        .then((response) => {
+          if (!response.ok) throw new Error("Lỗi khi lấy voucher");
+          return response.json();
+        })
+        .then((data) => setVouchers(data))
         .catch((error) => console.error("Lỗi khi lấy voucher:", error));
     }
   }, [showVoucherList]);

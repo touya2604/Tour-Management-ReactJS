@@ -1,89 +1,100 @@
-import React, { useState, useEffect } from "react";
-import "../styles/vouncher.scss";
-
-const Vouncher = ({ checkAcc }) => {
-  const [vouncherList, setVouncherList] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
-
-  useEffect(() => {
-    const fetchVounchers = async () => {
-      try {
-        const response = await fetch("https://api.example.com/vouchers"); //Ông thay bằng API của ô ở đây nhé
-        const data = await response.json();
-        setVouncherList(data);
-      } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu:", error);
-      }
-    };
-    fetchVounchers();
-  }, []);
-
-  const totalPages = Math.ceil(vouncherList.length / itemsPerPage);
-
-  const handlePageChange = (pageNumber) => {
-    if (pageNumber < 1 || pageNumber > totalPages) return;
-    setCurrentPage(pageNumber);
+import React, { useState } from "react";
+import TourTest from "../data/tourTest";
+const TouRCRUD = () => {
+  const [tourTest, setTourTest] = useState(TourTest);
+  const [tour, setTour] = useState({
+    name: "",
+    price: "",
+    capacity: 0,
+    timestart: "",
+    timeend: "",
+  });
+  const handleChange = (event, field) => {
+    setTour((prev) => ({ ...prev, [field]: event.target.value }));
   };
 
-  const displayedVouncher = vouncherList.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const handleAddNew = () => {
+    if (!tour.name || !tour.price) {
+      alert("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+    let lastTour =
+      tourTest.length > 0 ? tourTest[tourTest.length - 1] : { id: 0 };
+    let tournew = {
+      id: lastTour + 1,
+      name: tour.name,
+      img: "",
+      price: tour.price,
+      capacity: tour.capacity,
+      timestart: tour.timestart,
+      timeend: tour.timeend,
+    };
+
+    setTourTest((prev) => [...prev, tournew]);
+    setTour({ name: "", price: "", capacity: 0, timestart: "", timeend: "" });
+  };
 
   return (
     <>
+      {console.log(tourTest)}
       <div id="gray-background">
         <div id="vouncher-list">
-          <h1>Mã giảm giá</h1>
-          {vouncherList.length === 0 ? (
-            <p>Đang tải dữ liệu...</p>
-          ) : (
-            <div id="vouncher-detail">
-              {displayedVouncher.map((vouncher) => (
-                <div key={vouncher.id} id="vouncher-item">
-                  <img src={logoVouncher} alt="logoVouncher" />
-                  <div>
-                    <h2 className="vouncher-title">
-                      Giảm tối đa: {vouncher.title}%
-                    </h2>
-                    <div>
-                      <p className="vouncher-info">
-                        Đơn tối thiểu: {vouncher.des1}
-                      </p>
-                      <p className="vouncher-info">
-                        Hiệu lực sau: {vouncher.time} ngày
-                      </p>
-                    </div>
-                  </div>
-                  <button id="buttonUse">Dùng</button>
-                </div>
-              ))}
-            </div>
-          )}
-          <Pagination className="pagination-custom">
-            <Pagination.Prev
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            />
-            {[...Array(totalPages).keys()].map((number) => (
-              <Pagination.Item
-                key={number + 1}
-                active={number + 1 === currentPage}
-                onClick={() => handlePageChange(number + 1)}
-              >
-                {number + 1}
-              </Pagination.Item>
-            ))}
-            <Pagination.Next
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            />
-          </Pagination>
+          <h1>Tạo mới Tour</h1>
+          <div>
+            <form>
+              <label>Địa điểm: </label>
+              <br />
+              <input
+                type="text"
+                value={tour.name}
+                onChange={(event) => handleChange(event, "name")}
+              />
+              <br />
+              <label>Giá vé: </label>
+              <br />
+              <input
+                type="text"
+                value={tour.price}
+                onChange={(event) => handleChange(event, "price")}
+              />
+              <br />
+              <label>Thời gian đi: </label>
+              <br />
+              <input
+                type="date"
+                value={tour.timestart}
+                onChange={(event) => handleChange(event, "timestart")}
+              />
+            </form>
+            <form>
+              <label>Số lượng khách: </label>
+              <br />
+              <input
+                type="number"
+                value={tour.capacity}
+                onChange={(event) => handleChange(event, "capacity")}
+              />
+              <br />
+              <label>Thời gian về: </label>
+              <br />
+              <input
+                type="date"
+                value={tour.timeend}
+                onChange={(event) => handleChange(event, "timeend")}
+              />
+            </form>
+            <button
+              onClick={() => {
+                handleAddNew();
+              }}
+            >
+              Tạo mới
+            </button>
+          </div>
         </div>
       </div>
     </>
   );
 };
 
-export default Vouncher;
+export default TouRCRUD;
