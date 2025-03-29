@@ -47,8 +47,8 @@ const TourUpdate = () => {
                   <input
                     type="text"
                     className="form-control"
-                    value={tour.name}
-                    onChange={(e) => handleChange(e, "name")}
+                    value={tour.title}
+                    onChange={(e) => handleChange(e, "title")}
                   />
                 </div>
                 <div className="mb-3">

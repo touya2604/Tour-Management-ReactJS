@@ -43,33 +43,14 @@ const TourList = () => {
   }, []);
 
   useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/cities");
-
-        if (!response.ok) throw new Error("Lỗi khi lấy danh sách tỉnh");
-
-        const data = await response.json();
-        setAvailableCities(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchCities();
-  }, []);
-
-  useEffect(() => {
     let filtered = tours.filter((tour) =>
-      tour.name.toLowerCase().includes(search.toLowerCase())
+      tour.title.toLowerCase().includes(search.toLowerCase())
     );
 
     if (selectedCities.length > 0) {
-      filtered = filtered.filter((tour) => selectedCities.includes(tour.city));
-    }
-
-    if (ratings.length > 0) {
-      filtered = filtered.filter((tour) => ratings.includes(tour.rating));
+      filtered = filtered.filter((tour) =>
+        selectedCities.includes(tour.position)
+      );
     }
 
     filtered = filtered.filter(
@@ -113,25 +94,6 @@ const TourList = () => {
             <button onClick={() => setSortType("desc")}>
               Price descending
             </button>
-          </div>
-
-          <div className="rating-filter">
-            {[5, 4, 3, 2, 1].map((rate) => (
-              <label key={rate}>
-                <input
-                  type="checkbox"
-                  checked={ratings.includes(rate)}
-                  onChange={() =>
-                    setRatings((prev) =>
-                      prev.includes(rate)
-                        ? prev.filter((r) => r !== rate)
-                        : [...prev, rate]
-                    )
-                  }
-                />
-                {rate} Stars
-              </label>
-            ))}
           </div>
 
           <div className="price-filter">
@@ -193,13 +155,16 @@ const TourList = () => {
                 onClick={() => navigate(`/tour/${tour.id}`)}
                 style={{ cursor: "pointer" }}
               >
-                <img src={tour.image} alt={tour.name} className="tour-image" />
+                <img
+                  src={tour.images}
+                  alt={tour.title}
+                  className="tour-image"
+                />
                 <div className="tour-info">
-                  <h3 className="tour-name">{tour.name}</h3>
+                  <h3 className="tour-title">{tour.title}</h3>
                   <p className="tour-price">
-                    {tour.price.toLocaleString()} VNĐ - {tour.capacity} người
+                    {tour.price.toLocaleString()} VNĐ - {tour.stock} người
                   </p>
-                  <p className="tour-rating">{tour.rating} ⭐</p>
                   <button
                     className="detail-btn"
                     onClick={(e) => {

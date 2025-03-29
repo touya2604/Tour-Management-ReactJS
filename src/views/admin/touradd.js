@@ -5,11 +5,16 @@ import "../../styles/tourcrud.scss";
 const TourAdd = () => {
   const [tourTest, setTourTest] = useState([]);
   const [tour, setTour] = useState({
-    name: "",
-    price: "",
-    capacity: 0,
-    timestart: "",
-    timeend: "",
+    title: "",
+    code: "",
+    images: "",
+    price: 0,
+    discount: 0,
+    information: "",
+    schedule: "",
+    timeStart: "",
+    stock: 0,
+    status: "",
   });
 
   useEffect(() => {
@@ -37,12 +42,16 @@ const TourAdd = () => {
     }
 
     const tourNew = {
-      name: tour.name,
-      img: "",
+      title: tour.title,
+      code: tour.code,
+      images: tour.images,
       price: tour.price,
-      capacity: tour.capacity,
-      timestart: tour.timestart,
-      timeend: tour.timeend,
+      discount: tour.discount,
+      information: tour.information,
+      schedule: tour.schedule,
+      timeStart: tour.timeStart,
+      stock: tour.stock,
+      status: tour.status,
     };
 
     try {
@@ -53,7 +62,19 @@ const TourAdd = () => {
       });
       const data = await response.json();
       setTourTest((prev) => [...prev, data]);
-      setTour({ name: "", price: "", capacity: 0, timestart: "", timeend: "" });
+      setTour({
+        title: "",
+        code: "",
+        images: "",
+        price: 0,
+        discount: 0,
+        information: "",
+        schedule: "",
+        timeStart: "",
+        stock: 0,
+        status: "",
+      });
+
       alert("Tạo mới thành công");
     } catch (error) {
       console.error("Error adding tour:", error);
@@ -73,8 +94,8 @@ const TourAdd = () => {
                   <input
                     type="text"
                     className="form-control"
-                    value={tour.name}
-                    onChange={(e) => handleChange(e, "name")}
+                    value={tour.title}
+                    onChange={(e) => handleChange(e, "title")}
                   />
                 </div>
                 <div className="mb-3">
@@ -82,8 +103,8 @@ const TourAdd = () => {
                   <input
                     type="date"
                     className="form-control"
-                    value={tour.timestart}
-                    onChange={(e) => handleChange(e, "timestart")}
+                    value={tour.timeStart}
+                    onChange={(e) => handleChange(e, "timeStart")}
                   />
                 </div>
                 <div className="mb-3">
@@ -104,17 +125,8 @@ const TourAdd = () => {
                   <input
                     type="number"
                     className="form-control"
-                    value={tour.capacity}
-                    onChange={(e) => handleChange(e, "capacity")}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Thời gian về:</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={tour.timeend}
-                    onChange={(e) => handleChange(e, "timeend")}
+                    value={tour.stock}
+                    onChange={(e) => handleChange(e, "stock")}
                   />
                 </div>
               </form>

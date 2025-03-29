@@ -31,10 +31,16 @@ const TourDetail = () => {
   const handleAddToCart = () => {
     const tourItem = {
       id: tour.id,
-      name: tour.name,
+      title: tour.title,
+      code: tour.code,
+      images: tour.images,
       price: tour.price,
-      image: tour.image,
-      timestart: tour.timestart,
+      discount: tour.discount,
+      information: tour.information,
+      schedule: tour.schedule,
+      timeStart: tour.timeStart,
+      stock: tour.stock,
+      status: tour.status,
       quantity: 1,
     };
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -53,9 +59,9 @@ const TourDetail = () => {
   return (
     <div className="tour-detail">
       <div className="tour-header">
-        <img src={tour.image} alt={tour.name} className="tour-image" />
+        <img src={tour.images} alt={tour.title} className="tour-image" />
         <div className="tour-info">
-          <h1 className="tour-title">{tour.name}</h1>
+          <h1 className="tour-title">{tour.title}</h1>
           <p className="tour-price">{tour.price.toLocaleString()} VNĐ</p>
           <button className="add-to-cart" onClick={handleAddToCart}>
             Thêm vào giỏ hàng

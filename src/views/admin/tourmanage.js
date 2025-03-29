@@ -71,19 +71,16 @@ const TourManage = () => {
                     <div id="image-title">
                       <img src={Ph} alt="img" />
                       <div>
-                        <h2 className="vouncher-title">{tour.name}</h2>
+                        <h2 className="vouncher-title">{tour.title}</h2>
                         <div>
                           <p className="vouncher-info">
-                            Số lượng người: {tour.capacity} người
+                            Số lượng người: {tour.stock} người
                           </p>
                           <p className="vouncher-info">
                             Giá vé: {tour.price.toLocaleString()} VNĐ
                           </p>
                           <p className="vouncher-info">
-                            Thời gian đi: {tour.timestart}
-                          </p>
-                          <p className="vouncher-info">
-                            Thời gian về: {tour.timeend}
+                            Thời gian đi: {tour.timeStart}
                           </p>
                         </div>
                       </div>
