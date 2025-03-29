@@ -1,36 +1,62 @@
-import React, { useEffect, useState } from "react";
-import tourTest from "../data/tourTest";
-import { useParams } from "react-router-dom";
-const TourUpdate = () => {
-  const [tour, setTour] = useState({});
-  const { id } = useParams();
+import React, { useState, useEffect } from "react";
+import TourTest from "../../data/tourTest";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../../styles/tourcrud.scss";
+const TourAdd = () => {
+  const [tourTest, setTourTest] = useState([]);
+  const [tour, setTour] = useState({
+    name: "",
+    price: "",
+    capacity: 0,
+    timestart: "",
+    timeend: "",
+  });
+
   useEffect(() => {
-    const tourId = Number(id);
-    const UpdateTour = tourTest.find((t) => t.id === tourId);
-    setTour(UpdateTour);
-  }, [id]);
+    const fetchTours = async () => {
+      try {
+        const response = await fetch("https://your-api.com/tours");
+        const data = await response.json();
+        setTourTest(data);
+      } catch (error) {
+        console.error("Error fetching tours:", error);
+        setTourTest(TourTest);
+      }
+    };
+    fetchTours();
+  }, []);
+
   const handleChange = (event, field) => {
     setTour((prev) => ({ ...prev, [field]: event.target.value }));
   };
-  const handleUpdate = async () => {
+
+  const handleAddNew = async () => {
+    if (!tour.name || !tour.price) {
+      alert("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+
+    const tourNew = {
+      name: tour.name,
+      img: "",
+      price: tour.price,
+      capacity: tour.capacity,
+      timestart: tour.timestart,
+      timeend: tour.timeend,
+    };
+
     try {
-      const response = await fetch("https://api.example.com/update-tour", {
+      const response = await fetch("https://your-api.com/tours", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tour),
+        body: JSON.stringify(tourNew),
       });
-
-      if (!response.ok) throw new Error("Lưu thất bại!");
-
-      console.log("Lưu thành công:", tour);
+      const data = await response.json();
+      setTourTest((prev) => [...prev, data]);
+      setTour({ name: "", price: "", capacity: 0, timestart: "", timeend: "" });
+      alert("Tạo mới thành công");
     } catch (error) {
-      console.error("Lỗi khi lưu thông tin:", error);
-      const newTourTest = tourTest.map((item) =>
-        item.id === tour.id ? { ...tour } : item
-      );
-      localStorage.setItem("newTour", JSON.stringify(newTourTest));
-    } finally {
-      console.log("Lưu thành công:", tour);
+      console.error("Error adding tour:", error);
     }
   };
 
@@ -38,7 +64,7 @@ const TourUpdate = () => {
     <>
       <div className="container mt-4 p-5 rounded custom-container">
         <div className="container p-4 rounded shadow-lg custom-boder">
-          <h1 className="text-center custom-text">Cập nhật Tour</h1>
+          <h1 className="text-center custom-text">Tạo mới Tour</h1>
           <div className="row">
             <div className="col-md-6">
               <form>
@@ -95,8 +121,8 @@ const TourUpdate = () => {
             </div>
           </div>
           <div className="text-center mt-3">
-            <button className="btn custom-color" onClick={handleUpdate}>
-              Cập nhật
+            <button className="btn custom-color" onClick={handleAddNew}>
+              Tạo mới
             </button>
           </div>
         </div>
@@ -105,4 +131,4 @@ const TourUpdate = () => {
   );
 };
 
-export default TourUpdate;
+export default TourAdd;

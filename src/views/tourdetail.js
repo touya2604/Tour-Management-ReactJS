@@ -34,6 +34,7 @@ const TourDetail = () => {
       name: tour.name,
       price: tour.price,
       image: tour.image,
+      timestart: tour.timestart,
       quantity: 1,
     };
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -46,7 +47,7 @@ const TourDetail = () => {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-    alert("Đã thêm vào giỏ hàng!"); // Hiển thị thông báo
+    alert("Đã thêm vào giỏ hàng!");
   };
 
   return (

@@ -1,84 +1,85 @@
 import React, { useState, useEffect } from "react";
 import { Pagination } from "react-bootstrap";
-import Ph from "../assets/images/placeholder.jpg";
-import "../styles/tourmanage.scss";
-import tourTest from "../data/tourTest";
-import Add from "./add";
+import logoVouncher from "../../assets/images/logoFoot.png";
+import "../../styles/vounchermanage.scss";
+import vouchers from "../../data/vouncherTest";
 import { useNavigate } from "react-router-dom";
-const TourManage = () => {
-  const [tours, setTours] = useState([]);
+const VouncherManage = ({ checkAcc }) => {
+  const [vouncherList, setVouncherList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const itemsPerPage = 3;
   const navigate = useNavigate();
   useEffect(() => {
-    const fetchTours = async () => {
+    const fetchVounchers = async () => {
       try {
         const response = await fetch("https://api.example.com/vouchers"); //Ông thay bằng API của ô ở đây nhé
-        if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
         const data = await response.json();
-        setTours(data);
+        setVouncherList(data);
       } catch (error) {
-        console.error(error);
-        setTours(tourTest);
+        console.error("Lỗi khi lấy dữ liệu:", error);
+        setVouncherList(vouchers);
       } finally {
         setLoading(false);
       }
     };
-    fetchTours();
+    fetchVounchers();
   }, []);
 
   if (loading) {
     return <div className="loading">Đang tải Vouncher...</div>;
   }
 
-  const totalPages = Math.ceil(tours.length / itemsPerPage);
+  const totalPages = Math.ceil(vouncherList.length / itemsPerPage);
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
     setCurrentPage(pageNumber);
   };
-  const deleteItem = (id) => {
-    const updateTour = tours.filter((item) => item.id !== id);
-    setTours(updateTour);
-  };
-  const displayedTour = tours.slice(
+
+  const displayedVouncher = vouncherList.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+  const deleteVoucher = (id) => {
+    let newVouncherList = vouncherList.filter((item) => item.id !== id);
+    setVouncherList(newVouncherList);
+  };
 
   return (
     <>
       <div id="gray-background">
         <div id="vouncher-list">
           <div id="vouncher-list-up">
-            <h1>Quản lý tour </h1>
-            {/* <button className="buttonUse">Thêm mới tour</button> */}
-            <Add />
+            <h1>Mã giảm giá</h1>
+            <button
+              className="buttonUse"
+              onClick={() => {
+                navigate("/vouncher-add");
+              }}
+            >
+              Tạo mới vouncher
+            </button>
           </div>
-          <div id="vouncher-list-down">
-            {tours.length === 0 ? (
+          <div className="vouncher-list-up">
+            {vouncherList.length === 0 ? (
               <p>Đang tải dữ liệu...</p>
             ) : (
               <div id="vouncher-detail">
-                {displayedTour.map((tour) => (
-                  <div key={tour.id} id="vouncher-item">
+                {displayedVouncher.map((vouncher) => (
+                  <div key={vouncher.id} id="vouncher-item">
                     <div id="image-title">
-                      <img src={Ph} alt="img" />
+                      <img src={logoVouncher} alt="logoVouncher" />
                       <div>
-                        <h2 className="vouncher-title">{tour.name}</h2>
+                        <h2 className="vouncher-title">
+                          Giảm tối đa: {vouncher.percent}%
+                        </h2>
                         <div>
                           <p className="vouncher-info">
-                            Số lượng người: {tour.capacity} người
+                            Đơn tối thiểu: đ{vouncher.minimum}.000.000
                           </p>
                           <p className="vouncher-info">
-                            Giá vé: {tour.price.toLocaleString()} VNĐ
-                          </p>
-                          <p className="vouncher-info">
-                            Thời gian đi: {tour.timestart}
-                          </p>
-                          <p className="vouncher-info">
-                            Thời gian về: {tour.timeend}
+                            Hiệu lực sau: {vouncher.timeStart}
                           </p>
                         </div>
                       </div>
@@ -87,16 +88,14 @@ const TourManage = () => {
                       <button
                         className="buttonUse"
                         onClick={() => {
-                          navigate(`/tour-update/${tour.id}`);
+                          navigate(`/vouncher-update/${vouncher.id}`);
                         }}
                       >
                         Cập nhật
                       </button>
                       <button
                         className="buttonUse"
-                        onClick={() => {
-                          deleteItem(tour.id);
-                        }}
+                        onClick={() => deleteVoucher(vouncher.id)}
                       >
                         Xóa
                       </button>
@@ -131,4 +130,4 @@ const TourManage = () => {
   );
 };
 
-export default TourManage;
+export default VouncherManage;

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
-import TourTest from "../data/tourTest";
+import VouncherTest from "../../data/vouncherTest";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/tourcrud.scss";
-const TourAdd = () => {
-  const [tourTest, setTourTest] = useState([]);
-  const [tour, setTour] = useState({
-    name: "",
-    price: "",
-    capacity: 0,
-    timestart: "",
-    timeend: "",
+import "../../styles/tourcrud.scss";
+const VouncherAdd = () => {
+  const [vouncherTest, setVouncherTest] = useState([]);
+  const [vouncher, setVouncher] = useState({
+    percent: "",
+    minimum: "",
+    timeStart: "",
+    timeEnd: "",
   });
 
   useEffect(() => {
@@ -17,46 +16,49 @@ const TourAdd = () => {
       try {
         const response = await fetch("https://your-api.com/tours");
         const data = await response.json();
-        setTourTest(data);
+        setVouncherTest(data);
       } catch (error) {
         console.error("Error fetching tours:", error);
-        setTourTest(TourTest);
+        setVouncherTest(VouncherTest);
       }
     };
     fetchTours();
   }, []);
 
   const handleChange = (event, field) => {
-    setTour((prev) => ({ ...prev, [field]: event.target.value }));
+    setVouncher((prev) => ({ ...prev, [field]: event.target.value }));
   };
 
   const handleAddNew = async () => {
-    if (!tour.name || !tour.price) {
+    if (!vouncher.name || !vouncher.price) {
       alert("Vui lòng nhập đầy đủ thông tin!");
       return;
     }
 
-    const tourNew = {
-      name: tour.name,
-      img: "",
-      price: tour.price,
-      capacity: tour.capacity,
-      timestart: tour.timestart,
-      timeend: tour.timeend,
+    const vouncherNew = {
+      percent: vouncher.percent,
+      minimum: vouncher.minimum,
+      timeStart: vouncher.timeStart,
+      timeEnd: vouncher.timeEnd,
     };
 
     try {
-      const response = await fetch("https://your-api.com/tours", {
+      const response = await fetch("https://your-api.com/vouncher", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tourNew),
+        body: JSON.stringify(vouncherNew),
       });
       const data = await response.json();
-      setTourTest((prev) => [...prev, data]);
-      setTour({ name: "", price: "", capacity: 0, timestart: "", timeend: "" });
+      setVouncherTest((prev) => [...prev, data]);
+      setVouncher({
+        percent: "",
+        minimum: "",
+        timeStart: "",
+        timeEnd: "",
+      });
       alert("Tạo mới thành công");
     } catch (error) {
-      console.error("Error adding tour:", error);
+      console.error("Error adding vouncher:", error);
     }
   };
 
@@ -64,57 +66,44 @@ const TourAdd = () => {
     <>
       <div className="container mt-4 p-5 rounded custom-container">
         <div className="container p-4 rounded shadow-lg custom-boder">
-          <h1 className="text-center custom-text">Tạo mới Tour</h1>
-          <div className="row">
-            <div className="col-md-6">
+          <h1 className="text-center custom-text">Tạo mới Vouncher</h1>
+          <div>
+            <div className="col-md-6 mx-auto">
               <form>
                 <div className="mb-3">
-                  <label className="form-label">Địa điểm:</label>
+                  <label className="form-label">Phần trăm giảm giá</label>
                   <input
                     type="text"
                     className="form-control"
-                    value={tour.name}
+                    value={vouncher.name}
                     onChange={(e) => handleChange(e, "name")}
                   />
                 </div>
                 <div className="mb-3">
-                  <label className="form-label">Thời gian đi:</label>
+                  <label className="form-label">Số tiền tối thiểu</label>
                   <input
-                    type="date"
+                    type="text"
                     className="form-control"
-                    value={tour.timestart}
+                    value={vouncher.timestart}
                     onChange={(e) => handleChange(e, "timestart")}
                   />
                 </div>
                 <div className="mb-3">
-                  <label className="form-label">Giá vé:</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={tour.price}
-                    onChange={(e) => handleChange(e, "price")}
-                  />
-                </div>
-              </form>
-            </div>
-            <div className="col-md-6">
-              <form>
-                <div className="mb-3">
-                  <label className="form-label">Số lượng khách:</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={tour.capacity}
-                    onChange={(e) => handleChange(e, "capacity")}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Thời gian về:</label>
+                  <label className="form-label">Thời gian hiệu lực</label>
                   <input
                     type="date"
                     className="form-control"
-                    value={tour.timeend}
-                    onChange={(e) => handleChange(e, "timeend")}
+                    value={vouncher.price}
+                    onChange={(e) => handleChange(e, "price")}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Thời gian hết hạn</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={vouncher.capacity}
+                    onChange={(e) => handleChange(e, "capacity")}
                   />
                 </div>
               </form>
@@ -131,4 +120,4 @@ const TourAdd = () => {
   );
 };
 
-export default TourAdd;
+export default VouncherAdd;

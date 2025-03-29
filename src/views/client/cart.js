@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import "../styles/cart.scss";
+import "../../styles/cart.scss";
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
   const [vouchers, setVouchers] = useState([]);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [showVoucherList, setShowVoucherList] = useState(false);
-
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
     const fixedCart = savedCart.map((item) => ({
@@ -58,6 +57,30 @@ const Cart = () => {
     : 0;
   const finalAmount = totalAmount - discount;
   console.log("Cart data:", cart);
+
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      alert("Giỏ hàng trống!");
+      return;
+    }
+
+    const orderData = {
+      id: Date.now(),
+      items: cart.map((item) => ({
+        name: item.name,
+        price: finalAmount,
+        timestart: item.timestart,
+        image: item.image,
+      })),
+    };
+
+    const orderHistory = JSON.parse(localStorage.getItem("orderHistory")) || [];
+    orderHistory.push(orderData);
+    localStorage.setItem("orderHistory", JSON.stringify(orderHistory));
+
+    setCart([]);
+    localStorage.removeItem("cart");
+  };
 
   return (
     <>
@@ -119,7 +142,14 @@ const Cart = () => {
             >
               Sử dụng voucher
             </button>
-            <button className="checkout-btn">Thanh toán →</button>
+            <button
+              className="checkout-btn"
+              onClick={() => {
+                handleCheckout();
+              }}
+            >
+              Thanh toán →
+            </button>
           </div>
         </div>
 

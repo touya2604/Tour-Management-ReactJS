@@ -1,10 +1,11 @@
 const UserTest = [
   {
+    id: "0",
     email: "Tanh",
     fullName: "Tanh",
-    phone: "0941937885",
+    phone: "095",
     status: "Good",
-    id: "1",
+    role: "customer",
   },
 ];
 

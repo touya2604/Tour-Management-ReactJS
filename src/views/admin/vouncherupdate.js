@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import VouncherTest from "../data/vouncherTest";
+import VouncherTest from "../../data/vouncherTest";
 import { useParams } from "react-router-dom";
 const VouncherUpdate = () => {
   const [vouncher, setVouncher] = useState({});

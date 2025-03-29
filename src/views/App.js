@@ -4,21 +4,21 @@ import HomePage from "./homepage";
 import LogIn from "./logIn";
 import SignIn from "./signIn";
 import UserAccount from "./user-account";
-import UserHistory from "./user-history";
+import UserHistory from "./client/user-history";
 import Tour from "./tour";
 import News from "./news";
-import Cart from "./cart";
+import Cart from "./client/cart";
 import Vouncher from "./vouncher";
 import DeleteAcc from "./deleteAccount";
 import TourDetail from "./tourdetail";
 import Header from "../components/header";
-import VouncherManage from "./vounchermanage";
-import TourManage from "./tourmanage";
+import VouncherManage from "./admin/vounchermanage";
+import TourManage from "./admin/tourmanage";
 import UserTest from "../data/usertest";
-import TourAdd from "../components/touradd";
-import TourUpdate from "../components/tourupdate";
-import VouncherAdd from "../components/vouncheradd";
-import VouncherUpdate from "../components/vouncherupdate";
+import TourAdd from "./admin/touradd";
+import TourUpdate from "./admin/tourupdate";
+import VouncherAdd from "./admin/vouncheradd";
+import VouncherUpdate from "./admin/vouncherupdate";
 
 const App = () => {
   const [user, setUser] = useState({});
@@ -46,8 +46,8 @@ const App = () => {
     fetchUserData();
   }, []);
   useEffect(() => {
-    if (user[0] && user[0].id) {
-      setRole(user[0].id);
+    if (user[0] && user[0].role) {
+      setRole(user[0].role);
     }
   }, [user]);
   if (loading) {

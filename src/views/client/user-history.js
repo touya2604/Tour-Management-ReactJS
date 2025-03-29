@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Management from "../components/management";
+import Management from "../../components/management";
 import { Pagination } from "react-bootstrap";
-import "../styles/history.scss";
-import Ph from "../assets/images/placeholder.jpg";
+import "../../styles/history.scss";
+import Ph from "../../assets/images/placeholder.jpg";
 
-const UserHistory = ({ checkAcc }) => {
+const UserHistory = () => {
   const [tours, setTours] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
@@ -17,6 +17,9 @@ const UserHistory = ({ checkAcc }) => {
         setTours(data);
       } catch (error) {
         console.error("Lỗi khi lấy lịch sử đặt tour:", error);
+        const savedOrders =
+          JSON.parse(localStorage.getItem("orderHistory")) || [];
+        setTours(savedOrders);
       }
     };
     fetchTourHistory();
@@ -29,11 +32,7 @@ const UserHistory = ({ checkAcc }) => {
     setCurrentPage(pageNumber);
   };
 
-  const displayedTours = tours.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
+  console.log(tours);
   return (
     <>
       <div id="container-account">
@@ -46,19 +45,25 @@ const UserHistory = ({ checkAcc }) => {
             <p>Đang tải dữ liệu...</p>
           ) : (
             <div id="right-bar-bottom-history">
-              {displayedTours.map((tour) => (
-                <div key={tour.id} className="tour-card">
-                  <img
-                    src={tour.image || Ph}
-                    alt={tour.title}
-                    className="tour-image"
-                  />
-                  <h2 className="tour-title">{tour.title}</h2>
-                  <p className="tour-info">Ngày đi: {tour.dateStart}</p>
-                  <p className="tour-info">Ngày về: {tour.dateEnd}</p>
-                  <p className="tour-info">Giá: {tour.price}</p>
+              {tours.map((order) => (
+                <div key={order.id} className="order-card">
+                  {order.items.map((tour) => (
+                    <div key={tour.id} className="tour-card">
+                      <img
+                        src={tour.image || Ph}
+                        alt={tour.name}
+                        className="tour-image"
+                      />
+                      <h2 className="tour-title">{tour.name}</h2>
+                      <p className="tour-info">Ngày đi: {tour.timestart}</p>
+                      <p className="tour-info">
+                        Tổng tiền: {tour.price.toLocaleString()} VNĐ
+                      </p>
+                    </div>
+                  ))}
                 </div>
               ))}
+
               <Pagination className="pagination-custom">
                 <Pagination.Prev
                   onClick={() => handlePageChange(currentPage - 1)}
