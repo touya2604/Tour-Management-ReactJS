@@ -4,7 +4,10 @@ import logoVouncher from "../../assets/images/logoFoot.png";
 import "../../styles/vounchermanage.scss";
 import vouchers from "../../data/vouncherTest";
 import { useNavigate } from "react-router-dom";
-const VouncherManage = ({ checkAcc }) => {
+import * as systemConfig from "../../config/system";
+import dayjs from "dayjs";
+
+const VouncherManage = () => {
   const [vouncherList, setVouncherList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -13,9 +16,11 @@ const VouncherManage = ({ checkAcc }) => {
   useEffect(() => {
     const fetchVounchers = async () => {
       try {
-        const response = await fetch("https://api.example.com/vouchers"); //Ông thay bằng API của ô ở đây nhé
+        const response = await fetch(
+          `http://192.168.55.7:3000${systemConfig.prefixAdmin}/vouchers`
+        );
         const data = await response.json();
-        setVouncherList(data);
+        setVouncherList(Array.isArray(data.data) ? data.data : []);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu:", error);
         setVouncherList(vouchers);
@@ -37,10 +42,6 @@ const VouncherManage = ({ checkAcc }) => {
     setCurrentPage(pageNumber);
   };
 
-  const displayedVouncher = vouncherList.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
   const deleteVoucher = (id) => {
     let newVouncherList = vouncherList.filter((item) => item.id !== id);
     setVouncherList(newVouncherList);
@@ -55,7 +56,7 @@ const VouncherManage = ({ checkAcc }) => {
             <button
               className="buttonUse"
               onClick={() => {
-                navigate("/vouncher-add");
+                navigate(`${systemConfig.prefixAdmin}/voucher-add`);
               }}
             >
               Tạo mới vouncher
@@ -66,20 +67,23 @@ const VouncherManage = ({ checkAcc }) => {
               <p>Đang tải dữ liệu...</p>
             ) : (
               <div id="vouncher-detail">
-                {displayedVouncher.map((vouncher) => (
+                {vouncherList.map((vouncher) => (
                   <div key={vouncher.id} id="vouncher-item">
                     <div id="image-title">
                       <img src={logoVouncher} alt="logoVouncher" />
                       <div>
                         <h2 className="vouncher-title">
-                          Giảm tối đa: {vouncher.percent}%
+                          Giảm tối đa: {vouncher.discount}%
                         </h2>
                         <div>
                           <p className="vouncher-info">
-                            Đơn tối thiểu: đ{vouncher.minimum}.000.000
+                            Đơn tối thiểu: đ{vouncher.minAmount}tr
                           </p>
                           <p className="vouncher-info">
-                            Hiệu lực sau: {vouncher.timeStart}
+                            Hết hạn sau:{" "}
+                            {dayjs(vouncher.timeStart).format(
+                              "DD/MM/YYYY HH:mm"
+                            )}
                           </p>
                         </div>
                       </div>
@@ -88,7 +92,9 @@ const VouncherManage = ({ checkAcc }) => {
                       <button
                         className="buttonUse"
                         onClick={() => {
-                          navigate(`/vouncher-update/${vouncher.id}`);
+                          navigate(
+                            `${systemConfig.prefixAdmin}/voucher-update/${vouncher.id}`
+                          );
                         }}
                       >
                         Cập nhật

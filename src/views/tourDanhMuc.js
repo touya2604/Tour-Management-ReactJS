@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../styles/tour.scss";
 import { Pagination } from "react-bootstrap";
-const TourList = () => {
+const TourDanhMuc = () => {
   const itemsPerPage = 6;
   const [tours, setTours] = useState([]);
   const [filteredTours, setFilteredTours] = useState([]);
@@ -11,30 +11,29 @@ const TourList = () => {
   const [sortType, setSortType] = useState("");
   const [priceRange, setPriceRange] = useState([0, 10000000]);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const { slug } = useParams();
   const navigate = useNavigate();
   const totalPages = Math.ceil(filteredTours.length / itemsPerPage);
   useEffect(() => {
     const fetchTours = async () => {
       try {
         const response = await fetch(`http://192.168.55.7:3000/tours`);
-
         if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
 
         const data = await response.json();
-        console.log("API response:", data);
+        // console.log("API response:", data);
 
-        // setTours(Array.isArray(data) ? data : []);
-        // setFilteredTours(Array.isArray(data) ? data : []);
-        setTours(
-          Array.isArray(data.data)
-            ? data.data.map((tour) => ({
+        const filteredTours = Array.isArray(data.data)
+          ? data.data
+              .map((tour) => ({
                 ...tour,
                 images: JSON.parse(tour.images),
               }))
-            : []
-        );
-        setFilteredTours(Array.isArray(data.data) ? data.data : []);
+              .filter((tour) => tour.slug === slug)
+          : [];
+        console.log(slug);
+        setTours(filteredTours);
+        setFilteredTours(filteredTours);
       } catch (error) {
         console.error(error);
       } finally {
@@ -43,8 +42,7 @@ const TourList = () => {
     };
 
     fetchTours();
-  }, []);
-  console.log(tours);
+  }, [slug]);
   useEffect(() => {
     let filtered = tours.filter((tour) =>
       tour?.title?.toLowerCase().includes(search.toLowerCase())
@@ -120,7 +118,7 @@ const TourList = () => {
                 onClick={() => navigate(`/tour/${tour.id}`)}
               >
                 <img
-                  src={tour.images[0]}
+                  src={tour.images}
                   alt={tour.title}
                   className="tour-image"
                 />
@@ -168,4 +166,4 @@ const TourList = () => {
   );
 };
 
-export default TourList;
+export default TourDanhMuc;

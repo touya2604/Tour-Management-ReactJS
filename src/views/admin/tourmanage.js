@@ -2,34 +2,32 @@ import React, { useState, useEffect } from "react";
 import { Pagination } from "react-bootstrap";
 import Ph from "../../assets/images/placeholder.jpg";
 import "../../styles/tourmanage.scss";
-import tourTest from "../../data/tourTest";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
+import * as systemConfig from "../../config/system";
+
 const TourManage = () => {
   const [tours, setTours] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
   const itemsPerPage = 3;
   const navigate = useNavigate();
   useEffect(() => {
     const fetchTours = async () => {
       try {
-        const response = await fetch("https://api.example.com/vouchers"); //Ông thay bằng API của ô ở đây nhé
+        const response = await fetch(`http://192.168.55.7:3000/tours`);
         if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
+
         const data = await response.json();
-        setTours(data);
+        console.log("API response:", data);
+
+        setTours(Array.isArray(data.data) ? data.data : []);
       } catch (error) {
         console.error(error);
-        setTours(tourTest);
-      } finally {
-        setLoading(false);
       }
     };
+
     fetchTours();
   }, []);
-
-  if (loading) {
-    return <div className="loading">Đang tải Vouncher...</div>;
-  }
 
   const totalPages = Math.ceil(tours.length / itemsPerPage);
 
@@ -55,7 +53,7 @@ const TourManage = () => {
             <button
               className="buttonUse"
               onClick={() => {
-                navigate("/tour-add");
+                navigate(`${systemConfig.prefixAdmin}/tour-add`);
               }}
             >
               Thêm mới tour
@@ -80,7 +78,8 @@ const TourManage = () => {
                             Giá vé: {tour.price.toLocaleString()} VNĐ
                           </p>
                           <p className="vouncher-info">
-                            Thời gian đi: {tour.timeStart}
+                            Thời gian đi:{" "}
+                            {dayjs(tour.timeStart).format("DD/MM/YYYY HH:mm")}
                           </p>
                         </div>
                       </div>
@@ -89,7 +88,9 @@ const TourManage = () => {
                       <button
                         className="buttonUse"
                         onClick={() => {
-                          navigate(`/tour-update/${tour.id}`);
+                          navigate(
+                            `${systemConfig.prefixAdmin}/tour-update/${tour.slug}`
+                          );
                         }}
                       >
                         Cập nhật

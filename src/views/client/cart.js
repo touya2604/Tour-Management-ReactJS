@@ -3,27 +3,20 @@ import "../../styles/cart.scss";
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
-  const [vouchers, setVouchers] = useState([]);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [showVoucherList, setShowVoucherList] = useState(false);
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    const fixedCart = savedCart.map((item) => ({
-      ...item,
-      price: Number(item.price),
-      quantity: Number(item.quantity),
-    }));
-    setCart(fixedCart);
-    if (showVoucherList) {
-      fetch("http://localhost:5000/vouchers")
-        .then((response) => {
-          if (!response.ok) throw new Error("Lỗi khi lấy voucher");
-          return response.json();
-        })
-        .then((data) => setVouchers(data))
-        .catch((error) => console.error("Lỗi khi lấy voucher:", error));
-    }
-  }, [showVoucherList]);
+    const updateCart = () => {
+      const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
+      setCart(savedCart);
+    };
+
+    updateCart(); // Load ngay khi vào trang
+
+    window.addEventListener("storage", updateCart); // Cập nhật nếu localStorage thay đổi
+
+    return () => window.removeEventListener("storage", updateCart);
+  }, []);
 
   const updateQuantity = (id, amount) => {
     const updatedCart = cart.map((item) =>
@@ -67,10 +60,10 @@ const Cart = () => {
     const orderData = {
       id: Date.now(),
       items: cart.map((item) => ({
-        name: item.name,
+        title: item.name,
         price: finalAmount,
-        timestart: item.timestart,
-        image: item.image,
+        timeStart: item.timestart,
+        images: item.image,
       })),
     };
 
@@ -90,9 +83,13 @@ const Cart = () => {
           <div className="cart-list">
             {cart.map((item) => (
               <div key={item.id} className="cart-item">
-                <img src={item.image} alt={item.name} className="cart-image" />
+                <img
+                  src={item.images}
+                  alt={item.title}
+                  className="cart-image"
+                />
                 <div className="cart-info">
-                  <p className="cart-name">{item.name}</p>
+                  <p className="cart-name">{item.title}</p>
                   <p className="cart-price">
                     {item.price.toLocaleString()} VNĐ
                   </p>
@@ -153,7 +150,7 @@ const Cart = () => {
           </div>
         </div>
 
-        {showVoucherList && (
+        {/* {showVoucherList && (
           <div id="voucher-list">
             <h1>Danh sách Voucher</h1>
             <div id="voucher-detail">
@@ -180,7 +177,7 @@ const Cart = () => {
               )}
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </>
   );

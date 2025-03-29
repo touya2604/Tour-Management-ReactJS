@@ -19,6 +19,10 @@ import TourAdd from "./admin/touradd";
 import TourUpdate from "./admin/tourupdate";
 import VouncherAdd from "./admin/vouncheradd";
 import VouncherUpdate from "./admin/vouncherupdate";
+import * as systemConfig from "../config/system";
+import UserManage from "./admin/customerManage";
+import CategoryList from "./CategoryList";
+import TourDanhMuc from "./tourDanhMuc";
 
 const App = () => {
   const [user, setUser] = useState({});
@@ -29,7 +33,7 @@ const App = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/user-info");
+        const response = await fetch("http://localhost:3000/info");
 
         if (!response.ok) throw new Error("Lỗi khi lấy thong tin account");
 
@@ -74,13 +78,41 @@ const App = () => {
         <Route path="/newsletter" element={<News />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/vouncher" element={<Vouncher />} />
-        <Route path="/tour-detail/:id" element={<TourDetail />} />
-        <Route path="/voucher-manage" element={<VouncherManage />} />
-        <Route path="/tour-manage" element={<TourManage></TourManage>} />
-        <Route path="/tour-add" element={<TourAdd />} />
-        <Route path="/tour-update/:id" element={<TourUpdate />} />
-        <Route path="/vouncher-add" element={<VouncherAdd />} />
-        <Route path="/vouncher-update/:id" element={<VouncherUpdate />} />
+        <Route path="/tour/detail/:slug" element={<TourDetail />} />
+        <Route
+          path={`${systemConfig.prefixAdmin}/vouchers`}
+          element={<VouncherManage />}
+        />
+        <Route
+          path={`${systemConfig.prefixAdmin}/customers`}
+          element={<UserManage />}
+        />
+        <Route
+          path={`${systemConfig.prefixAdmin}/categories`}
+          element={<CategoryList />}
+        />
+        <Route path="/tourDanhMuc/:slug" element={<TourDanhMuc />} />
+
+        <Route
+          path={`${systemConfig.prefixAdmin}/tour-manage`}
+          element={<TourManage></TourManage>}
+        />
+        <Route
+          path={`${systemConfig.prefixAdmin}/tour-add`}
+          element={<TourAdd />}
+        />
+        <Route
+          path={`${systemConfig.prefixAdmin}/tour-update/:slug`}
+          element={<TourUpdate />}
+        />
+        <Route
+          path={`${systemConfig.prefixAdmin}/voucher-add`}
+          element={<VouncherAdd />}
+        />
+        <Route
+          path={`${systemConfig.prefixAdmin}/voucher-update/:id`}
+          element={<VouncherUpdate />}
+        />
       </Routes>
     </Router>
   );

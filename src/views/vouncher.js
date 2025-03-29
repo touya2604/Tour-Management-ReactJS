@@ -9,16 +9,24 @@ const Vouncher = () => {
   const itemsPerPage = 6;
 
   useEffect(() => {
-    const fetchVounchers = async () => {
+    const fetchTours = async () => {
       try {
-        const response = await fetch("https://api.example.com/vouchers"); //Ông thay bằng API của ô ở đây nhé
+        const response = await fetch("http://192.168.55.5:3000/tours");
+        if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
+
         const data = await response.json();
-        setVouncherList(data);
+        console.log("API response:", data);
+
+        // setTours(Array.isArray(data) ? data : []);
+        // setFilteredTours(Array.isArray(data) ? data : []);
+        setVouncherList(Array.isArray(data.data) ? data.data : []);
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu:", error);
+        console.error(error);
+      } finally {
       }
     };
-    fetchVounchers();
+
+    fetchTours();
   }, []);
 
   const totalPages = Math.ceil(vouncherList.length / itemsPerPage);
@@ -47,14 +55,14 @@ const Vouncher = () => {
                   <img src={logoVouncher} alt="logoVouncher" />
                   <div>
                     <h2 className="vouncher-title">
-                      Giảm tối đa: {vouncher.title}%
+                      Giảm tối đa: {vouncher.discount}%
                     </h2>
                     <div>
                       <p className="vouncher-info">
-                        Đơn tối thiểu: {vouncher.des1}
+                        Đơn tối thiểu: {vouncher.minAmount}
                       </p>
                       <p className="vouncher-info">
-                        Hiệu lực sau: {vouncher.time} ngày
+                        Hết hạn sau: {vouncher.expire} ngày
                       </p>
                     </div>
                   </div>

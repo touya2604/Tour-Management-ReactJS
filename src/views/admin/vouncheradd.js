@@ -1,64 +1,72 @@
-import React, { useState, useEffect } from "react";
-import VouncherTest from "../../data/vouncherTest";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/tourcrud.scss";
+import dayjs from "dayjs";
+import * as systemConfig from "../../config/system";
+
 const VouncherAdd = () => {
-  const [vouncherTest, setVouncherTest] = useState([]);
   const [vouncher, setVouncher] = useState({
-    percent: "",
-    minimum: "",
-    timeStart: "",
-    timeEnd: "",
+    discount: 0,
+    minAmount: 0,
+    expire: "",
+    status: "Active",
+    deleted: 0,
+    deletedAt: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   });
 
-  useEffect(() => {
-    const fetchTours = async () => {
-      try {
-        const response = await fetch("https://your-api.com/tours");
-        const data = await response.json();
-        setVouncherTest(data);
-      } catch (error) {
-        console.error("Error fetching tours:", error);
-        setVouncherTest(VouncherTest);
-      }
-    };
-    fetchTours();
-  }, []);
-
   const handleChange = (event, field) => {
-    setVouncher((prev) => ({ ...prev, [field]: event.target.value }));
+    setVouncher((prev) => ({
+      ...prev,
+      [field]:
+        field === "discount" || field === "minAmount"
+          ? parseFloat(event.target.value)
+          : event.target.value,
+    }));
   };
 
   const handleAddNew = async () => {
-    if (!vouncher.name || !vouncher.price) {
+    if (!vouncher.discount || !vouncher.minAmount || !vouncher.expire) {
       alert("Vui lòng nhập đầy đủ thông tin!");
       return;
     }
 
-    const vouncherNew = {
-      percent: vouncher.percent,
-      minimum: vouncher.minimum,
-      timeStart: vouncher.timeStart,
-      timeEnd: vouncher.timeEnd,
+    const newVouncher = {
+      ...vouncher,
+      expire: dayjs(vouncher.expire).toISOString(),
     };
 
     try {
-      const response = await fetch("https://your-api.com/vouncher", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(vouncherNew),
-      });
-      const data = await response.json();
-      setVouncherTest((prev) => [...prev, data]);
+      const response = await fetch(
+        `http://192.168.55.7:3000${systemConfig.prefixAdmin}/vouchers`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newVouncher),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Lỗi khi thêm mới voucher: ${errorText}`);
+      }
+
       setVouncher({
-        percent: "",
-        minimum: "",
-        timeStart: "",
-        timeEnd: "",
+        discount: 0,
+        minAmount: 0,
+        expire: "",
+        status: "Active",
+        deleted: 0,
+        deletedAt: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       });
-      alert("Tạo mới thành công");
+
+      alert("Tạo mới thành công!");
     } catch (error) {
-      console.error("Error adding vouncher:", error);
+      console.error("Lỗi khi thêm voucher:", error);
+      alert("Có lỗi xảy ra khi thêm voucher!");
     }
   };
 
@@ -66,35 +74,26 @@ const VouncherAdd = () => {
     <>
       <div className="container mt-4 p-5 rounded custom-container">
         <div className="container p-4 rounded shadow-lg custom-boder">
-          <h1 className="text-center custom-text">Tạo mới Vouncher</h1>
-          <div>
+          <h1 className="text-center custom-text">Tạo mới Voucher</h1>
+          <div className="row">
             <div className="col-md-6 mx-auto">
               <form>
                 <div className="mb-3">
                   <label className="form-label">Phần trăm giảm giá</label>
                   <input
-                    type="text"
+                    type="number"
                     className="form-control"
-                    value={vouncher.name}
-                    onChange={(e) => handleChange(e, "name")}
+                    value={vouncher.discount}
+                    onChange={(e) => handleChange(e, "discount")}
                   />
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Số tiền tối thiểu</label>
                   <input
-                    type="text"
+                    type="number"
                     className="form-control"
-                    value={vouncher.timestart}
-                    onChange={(e) => handleChange(e, "timestart")}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Thời gian hiệu lực</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={vouncher.price}
-                    onChange={(e) => handleChange(e, "price")}
+                    value={vouncher.minAmount}
+                    onChange={(e) => handleChange(e, "minAmount")}
                   />
                 </div>
                 <div className="mb-3">
@@ -102,8 +101,8 @@ const VouncherAdd = () => {
                   <input
                     type="date"
                     className="form-control"
-                    value={vouncher.capacity}
-                    onChange={(e) => handleChange(e, "capacity")}
+                    value={vouncher.expire}
+                    onChange={(e) => handleChange(e, "expire")}
                   />
                 </div>
               </form>

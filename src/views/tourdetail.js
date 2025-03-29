@@ -1,58 +1,58 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../styles/tourdetail.scss";
-import tours from "../data/tourTest";
 const TourDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [tour, setTour] = useState(null);
+  const [cart, setCart] = useState(() => {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+  });
 
   useEffect(() => {
-    const tourId = Number(id);
-
-    const fetchTour = async () => {
+    const fetchTours = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/tours/${tourId}`);
-        if (!response.ok) {
-          throw new Error("Lỗi mạng hoặc API");
-        }
+        const response = await fetch(`http://192.168.55.7:3000/tours`);
+        if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
+
         const data = await response.json();
-        setTour(data);
+        console.log("API response:", data);
+
+        if (Array.isArray(data.data)) {
+          const toursWithParsedImages = data.data.map((tour) => ({
+            ...tour,
+            images: JSON.parse(tour.images),
+          }));
+
+          const selectedTour = toursWithParsedImages.find(
+            (t) => t.slug === slug
+          );
+          setTour(selectedTour || null);
+        }
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu tour:", error);
-        const foundTour = tours.find((t) => t.id === tourId);
-        setTour(foundTour || null);
+        console.error(error);
       }
     };
 
-    fetchTour();
-  }, [id]);
+    fetchTours();
+  }, [slug]);
 
   if (!tour) return <p>Đang tải dữ liệu...</p>;
+
   const handleAddToCart = () => {
-    const tourItem = {
-      id: tour.id,
-      title: tour.title,
-      code: tour.code,
-      images: tour.images,
-      price: tour.price,
-      discount: tour.discount,
-      information: tour.information,
-      schedule: tour.schedule,
-      timeStart: tour.timeStart,
-      stock: tour.stock,
-      status: tour.status,
-      quantity: 1,
-    };
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existingItem = cart.find((item) => item.id === tourItem.id);
+    const tourItem = { ...tour, quantity: 1 };
+    const existingItem = cart.find((item) => item.id === tour.id);
+    let updatedCart;
 
     if (existingItem) {
-      existingItem.quantity += 1;
+      updatedCart = cart.map((item) =>
+        item.id === tour.id ? { ...item, quantity: item.quantity + 1 } : item
+      );
     } else {
-      cart.push(tourItem);
+      updatedCart = [...cart, tourItem];
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
     alert("Đã thêm vào giỏ hàng!");
   };
 
@@ -62,7 +62,9 @@ const TourDetail = () => {
         <img src={tour.images} alt={tour.title} className="tour-image" />
         <div className="tour-info">
           <h1 className="tour-title">{tour.title}</h1>
-          <p className="tour-price">{tour.price.toLocaleString()} VNĐ</p>
+          <p className="tour-price">
+            {tour.price ? tour.price.toLocaleString() : "Liên hệ"} VNĐ
+          </p>
           <button className="add-to-cart" onClick={handleAddToCart}>
             Thêm vào giỏ hàng
           </button>
@@ -70,22 +72,8 @@ const TourDetail = () => {
       </div>
       <div className="tour-description">
         <h2>Mô tả</h2>
-        <p>{tour.description || "Chưa có mô tả cho tour này."}</p>
-      </div>
-      <div className="tour-reviews">
-        <h2>Đánh giá</h2>
-        {tour.reviews && tour.reviews.length > 0 ? (
-          tour.reviews.map((review, index) => (
-            <div key={index} className="review-card">
-              <p className="review-text">{review.comment}</p>
-              <p className="review-user">
-                {review.user} - {review.date}
-              </p>
-            </div>
-          ))
-        ) : (
-          <p>Chưa có đánh giá nào.</p>
-        )}
+        <p>{tour.information || "Chưa có mô tả cho tour này."}</p>
+        <p>{tour.schedule}</p>
       </div>
     </div>
   );

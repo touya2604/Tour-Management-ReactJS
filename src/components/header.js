@@ -4,6 +4,7 @@ import logoHead from "../assets/images/logoHead.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserLarge } from "@fortawesome/free-solid-svg-icons";
 import "../styles/header.scss";
+import * as systemConfig from "../config/system";
 
 const Header = ({ checkLog }) => {
   const navigate = useNavigate();
@@ -23,21 +24,40 @@ const Header = ({ checkLog }) => {
         <button onClick={() => navigate("/tour")}>Tour du lịch</button>
         <button onClick={() => navigate("/newsletter")}>Tin tức</button>
         {checkLog === "admin" && (
+          <button
+            onClick={() => navigate(`${systemConfig.prefixAdmin}/categories`)}
+          >
+            Danh mục
+          </button>
+        )}
+        {checkLog === "admin" && (
           <button onClick={() => navigate("/revenue")}>
             Quản lý doanh thu
           </button>
         )}
         {checkLog === "admin" ? (
-          <button onClick={() => navigate("/voucher-manage")}>
+          <button
+            onClick={() => navigate(`${systemConfig.prefixAdmin}/vouchers`)}
+          >
             Quản lý vouncher
           </button>
         ) : (
           <button onClick={() => navigate("/vouncher")}>Mã giảm giá</button>
         )}
         {checkLog === "admin" && <button>Quản lý đơn hàng</button>}
-        {checkLog === "admin" && <button>Quản lý tài kh</button>}
+        {checkLog === "admin" && (
+          <button
+            onClick={() => navigate(`${systemConfig.prefixAdmin}/customers`)}
+          >
+            Quản lý tài khoản
+          </button>
+        )}
         {checkLog === "admin" ? (
-          <button onClick={() => navigate("/tour-manage")}>Quản lý tour</button>
+          <button
+            onClick={() => navigate(`${systemConfig.prefixAdmin}/tour-manage`)}
+          >
+            Quản lý tour
+          </button>
         ) : (
           <button onClick={() => navigate("/cart")}>Giỏ hàng</button>
         )}

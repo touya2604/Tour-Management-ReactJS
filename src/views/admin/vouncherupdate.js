@@ -1,81 +1,142 @@
 import React, { useState, useEffect } from "react";
-import VouncherTest from "../../data/vouncherTest";
-import { useParams } from "react-router-dom";
-const VouncherUpdate = () => {
-  const [vouncher, setVouncher] = useState({});
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../../styles/tourcrud.scss";
+import dayjs from "dayjs";
+import { useNavigate, useParams } from "react-router-dom";
+import * as systemConfig from "../../config/system";
+
+const VoucherUpdate = () => {
+  const [voucher, setTour] = useState([]);
   const { id } = useParams();
+  const navigate = useNavigate();
   useEffect(() => {
-    const vouncherId = Number(id);
-    const UpdateVouncher = VouncherTest.find((t) => t.id === vouncherId);
-    setVouncher(UpdateVouncher);
+    const fetchTours = async () => {
+      try {
+        const response = await fetch(
+          `http://192.168.55.7:3000${systemConfig.prefixAdmin}/vouchers`
+        );
+        if (!response.ok) throw new Error("Lỗi khi lấy danh sách vouncher");
+
+        const data = await response.json();
+        console.log("API response:", data);
+
+        const filteredVouncher = Array.isArray(data.data)
+          ? data.data.find((v) => String(v.id) === id) || null
+          : null;
+
+        setTour(filteredVouncher);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchTours();
   }, [id]);
+
   const handleChange = (event, field) => {
-    setVouncher((prev) => ({ ...prev, [field]: event.target.value }));
+    setTour((prev) => ({
+      ...prev,
+      [field]:
+        field === "price" || field === "minAmount"
+          ? parseFloat(event.target.value)
+          : event.target.value,
+    }));
   };
+
   const handleUpdate = async () => {
+    if (
+      !voucher ||
+      !voucher.status ||
+      !voucher.discount ||
+      !voucher.expire ||
+      !voucher.minAmount
+    ) {
+      alert("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+
+    const updatedTour = {
+      ...voucher,
+      expire: dayjs(voucher.expire).toISOString(),
+      deletedAt: voucher.deletedAt
+        ? dayjs(voucher.deletedAt).toISOString()
+        : null,
+      createdAt: voucher.createdAt
+        ? dayjs(voucher.createdAt).toISOString()
+        : null,
+      updatedAt: voucher.updatedAt
+        ? dayjs(voucher.updatedAt).toISOString()
+        : null,
+    };
+
     try {
-      const response = await fetch("https://api.example.com/update-vouncher", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(vouncher),
-      });
-
-      if (!response.ok) throw new Error("Lưu thất bại!");
-
-      console.log("Lưu thành công:", vouncher);
-    } catch (error) {
-      console.error("Lỗi khi lưu thông tin:", error);
-      const newVouncherTest = VouncherTest.map((item) =>
-        item.id === vouncher.id ? { ...vouncher } : item
+      const response = await fetch(
+        `http://192.168.55.7:3000${systemConfig.prefixAdmin}/vouchers/${id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedTour),
+        }
       );
-      localStorage.setItem("newTour", JSON.stringify(newVouncherTest));
-    } finally {
-      console.log("Lưu thành công:", vouncher);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Lỗi khi cập nhật voucher: ${errorText}`);
+      }
+
+      alert("Cập nhật thành công!");
+      navigate(`${systemConfig.prefixAdmin}/voucher-manage`);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật voucher:", error);
+      alert("Có lỗi xảy ra khi cập nhật voucher!");
     }
   };
 
   return (
     <>
       <div className="container mt-4 p-5 rounded custom-container">
-        <div className="container p-4 rounded shadow-lg custom-boder">
-          <h1 className="text-center custom-text">Cập nhật Vouncher</h1>
-          <div>
+        <div className="container p-4 rounded shadow-lg custom-border">
+          <h1 className="text-center custom-text">Cập nhật Voucher</h1>
+          <div className="row">
             <div className="col-md-6 mx-auto">
               <form>
                 <div className="mb-3">
-                  <label className="form-label">Phần trăm giảm giá</label>
+                  <label className="form-label">Trạng thái</label>
                   <input
                     type="text"
                     className="form-control"
-                    value={vouncher.percent}
-                    onChange={(e) => handleChange(e, "percent")}
+                    value={voucher.status}
+                    onChange={(e) => handleChange(e, "status")}
                   />
                 </div>
                 <div className="mb-3">
-                  <label className="form-label">Số tiền tối thiểu</label>
+                  <label className="form-label">Giảm giá</label>
                   <input
-                    type="text"
+                    type="number"
                     className="form-control"
-                    value={vouncher.minimum}
-                    onChange={(e) => handleChange(e, "minimum")}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Thời gian hiệu lực</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={vouncher.timeStart}
-                    onChange={(e) => handleChange(e, "timeStart")}
+                    value={voucher.discount}
+                    onChange={(e) => handleChange(e, "discount")}
                   />
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Thời gian hết hạn</label>
                   <input
-                    type="date"
+                    type="datetime-local"
                     className="form-control"
-                    value={vouncher.timeEnd}
-                    onChange={(e) => handleChange(e, "timeEnd")}
+                    value={
+                      voucher.expire
+                        ? dayjs(voucher.expire).format("YYYY-MM-DDTHH:mm")
+                        : ""
+                    }
+                    onChange={(e) => handleChange(e, "expire")}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Số tiền tối thiểu</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={voucher.minAmount}
+                    onChange={(e) => handleChange(e, "minAmount")}
                   />
                 </div>
               </form>
@@ -92,4 +153,4 @@ const VouncherUpdate = () => {
   );
 };
 
-export default VouncherUpdate;
+export default VoucherUpdate;
