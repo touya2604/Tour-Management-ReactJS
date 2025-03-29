@@ -1,19 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-const Add = () => {
+const Update = () => {
   let navigate = useNavigate();
   return (
     <>
       <button
         className="buttonUse"
         onClick={() => {
-          navigate("/tour-add");
+          navigate("/tour-update");
         }}
       >
-        Thêm mới tour
+        Cập nhật
       </button>
     </>
   );
 };
 
-export default Add;
+export default Update;

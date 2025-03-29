@@ -4,11 +4,13 @@ import Ph from "../assets/images/placeholder.jpg";
 import "../styles/tourmanage.scss";
 import tourTest from "../data/tourTest";
 import Add from "./add";
+import { useNavigate } from "react-router-dom";
 const TourManage = () => {
   const [tours, setTours] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const itemsPerPage = 3;
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchTours = async () => {
       try {
@@ -36,7 +38,10 @@ const TourManage = () => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
     setCurrentPage(pageNumber);
   };
-
+  const deleteItem = (id) => {
+    const updateTour = tours.filter((item) => item.id !== id);
+    setTours(updateTour);
+  };
   const displayedTour = tours.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -57,7 +62,7 @@ const TourManage = () => {
             ) : (
               <div id="vouncher-detail">
                 {displayedTour.map((tour) => (
-                  <div key={tour.img} id="vouncher-item">
+                  <div key={tour.id} id="vouncher-item">
                     <div id="image-title">
                       <img src={Ph} alt="img" />
                       <div>
@@ -79,8 +84,22 @@ const TourManage = () => {
                       </div>
                     </div>
                     <div id="Fix-Del">
-                      <button className="buttonUse">Cập nhật</button>
-                      <button className="buttonUse">Xóa</button>
+                      <button
+                        className="buttonUse"
+                        onClick={() => {
+                          navigate(`/tour-update/${tour.id}`);
+                        }}
+                      >
+                        Cập nhật
+                      </button>
+                      <button
+                        className="buttonUse"
+                        onClick={() => {
+                          deleteItem(tour.id);
+                        }}
+                      >
+                        Xóa
+                      </button>
                     </div>
                   </div>
                 ))}
