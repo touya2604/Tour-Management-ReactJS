@@ -98,7 +98,7 @@ const History = () => {
             {vouchers.length > 0 ? (
               vouchers.map((voucher) => (
                 <div key={voucher.id} className="voucher-item">
-                  <img src={Ph} />
+                  <img src={Ph} alt="alt" />
                   <p>
                     <strong>Giảm {voucher.discount}%</strong>
                   </p>

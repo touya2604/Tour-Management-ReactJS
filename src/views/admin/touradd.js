@@ -21,7 +21,7 @@ const TourAdd = () => {
     deletedAt: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    category_title: "Tour mùa hè",
+    category_title: "",
   });
 
   const handleChange = (event, field) => {
@@ -110,7 +110,7 @@ const TourAdd = () => {
         status: "active",
         position: 1,
         slug: "",
-        category_title: "Tour mùa hè",
+        category_title: "",
       });
 
       setImages([]);
@@ -167,6 +167,31 @@ const TourAdd = () => {
                   value={tour.discount}
                   onChange={(e) => handleChange(e, "discount")}
                 />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Danh mục Tour:</label>
+                <select
+                  className="form-control"
+                  value={tour.category_title}
+                  onChange={(e) => handleChange(e, "category_title")}
+                >
+                  {[
+                    "Du lịch trong nước",
+                    "Du lịch nước ngoài",
+                    "Tour mùa hè",
+                    "Tour mùa đông",
+                    "Tour thám hiểm",
+                    "Tour nghỉ dưỡng",
+                    "Tour ẩm thực",
+                    "Tour giáo dục",
+                    "Tour thể thao",
+                    "Tour gia đình",
+                  ].map((cate, index) => (
+                    <option key={index} value={cate}>
+                      {cate}
+                    </option>
+                  ))}
+                </select>
               </div>
             </form>
           </div>

@@ -140,6 +140,31 @@ const TourUpdate = () => {
                   onChange={(e) => handleChange(e, "discount")}
                 />
               </div>
+              <div className="mb-3">
+                <label className="form-label">Danh Mục:</label>
+                <select
+                  className="form-control"
+                  value={tour.category_title}
+                  onChange={(e) => handleChange(e, "category_title")}
+                >
+                  {[
+                    "Du lịch trong nước",
+                    "Du lịch nước ngoài",
+                    "Tour mùa hè",
+                    "Tour mùa đông",
+                    "Tour thám hiểm",
+                    "Tour nghỉ dưỡng",
+                    "Tour ẩm thực",
+                    "Tour giáo dục",
+                    "Tour thể thao",
+                    "Tour gia đình",
+                  ].map((cate, index) => (
+                    <option key={index} value={cate}>
+                      {cate}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </form>
           </div>
 
