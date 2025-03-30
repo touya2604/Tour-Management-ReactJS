@@ -11,7 +11,7 @@ const TourDanhMuc = () => {
   const [sortType, setSortType] = useState("");
   const [priceRange, setPriceRange] = useState([0, 10000000]);
   const [currentPage, setCurrentPage] = useState(1);
-  const { slug } = useParams();
+  const { category_title } = useParams();
   const navigate = useNavigate();
   const totalPages = Math.ceil(filteredTours.length / itemsPerPage);
   useEffect(() => {
@@ -29,9 +29,9 @@ const TourDanhMuc = () => {
                 ...tour,
                 images: JSON.parse(tour.images),
               }))
-              .filter((tour) => tour.slug === slug)
+              .filter((tour) => tour.category_title === category_title)
           : [];
-        console.log(slug);
+        console.log(category_title);
         setTours(filteredTours);
         setFilteredTours(filteredTours);
       } catch (error) {
@@ -42,7 +42,7 @@ const TourDanhMuc = () => {
     };
 
     fetchTours();
-  }, [slug]);
+  }, [category_title]);
   useEffect(() => {
     let filtered = tours.filter((tour) =>
       tour?.title?.toLowerCase().includes(search.toLowerCase())

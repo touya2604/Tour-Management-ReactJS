@@ -45,7 +45,7 @@ const CategoryList = () => {
             <h3>{category.title}</h3>
             <Button
               variant="primary"
-              onClick={() => navigate(`/tourDanhMuc/${category.slug}`)}
+              onClick={() => navigate(`/tourDanhMuc/${category.title}`)}
             >
               Xem chi tiết
             </Button>

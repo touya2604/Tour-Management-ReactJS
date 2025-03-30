@@ -5,9 +5,32 @@ import dayjs from "dayjs";
 
 const TourUpdate = () => {
   const [tour, setTour] = useState(null);
+  const [cates, setCate] = useState([]);
   const { slug } = useParams();
   const navigate = useNavigate();
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(
+          `http://192.168.55.14:3000${systemConfig.prefixAdmin}/categories`
+        );
 
+        if (!response.ok) throw new Error("Lỗi khi lấy danh sách danh mục");
+
+        const data = await response.json();
+        console.log("API response:", data);
+        const categoryTitles = Array.isArray(data.data)
+          ? data.data.map((category) => category.title)
+          : [];
+
+        setCate(categoryTitles);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
   useEffect(() => {
     const fetchTours = async () => {
       try {
@@ -147,18 +170,7 @@ const TourUpdate = () => {
                   value={tour.category_title}
                   onChange={(e) => handleChange(e, "category_title")}
                 >
-                  {[
-                    "Du lịch trong nước",
-                    "Du lịch nước ngoài",
-                    "Tour mùa hè",
-                    "Tour mùa đông",
-                    "Tour thám hiểm",
-                    "Tour nghỉ dưỡng",
-                    "Tour ẩm thực",
-                    "Tour giáo dục",
-                    "Tour thể thao",
-                    "Tour gia đình",
-                  ].map((cate, index) => (
+                  {cates.map((cate, index) => (
                     <option key={index} value={cate}>
                       {cate}
                     </option>

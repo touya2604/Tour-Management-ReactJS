@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/tourcrud.scss";
 import dayjs from "dayjs";
+import * as systemConfig from "../../config/system";
 
 const TourAdd = () => {
   const [images, setImages] = useState([]);
+  const [cates, setCate] = useState([]);
   const [tour, setTour] = useState({
     title: "",
     code: `TOUR${Math.floor(Math.random() * 1000000)}`,
@@ -24,6 +26,30 @@ const TourAdd = () => {
     category_title: "",
   });
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(
+          `http://192.168.55.14:3000${systemConfig.prefixAdmin}/categories`
+        );
+
+        if (!response.ok) throw new Error("Lỗi khi lấy danh sách danh mục");
+
+        const data = await response.json();
+        console.log("API response:", data);
+
+        const categoryTitles = Array.isArray(data.data)
+          ? data.data.map((category) => category.title)
+          : [];
+
+        setCate(categoryTitles);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
   const handleChange = (event, field) => {
     let value = event.target.value;
     if (["price", "discount", "stock"].includes(field)) {
@@ -175,18 +201,7 @@ const TourAdd = () => {
                   value={tour.category_title}
                   onChange={(e) => handleChange(e, "category_title")}
                 >
-                  {[
-                    "Du lịch trong nước",
-                    "Du lịch nước ngoài",
-                    "Tour mùa hè",
-                    "Tour mùa đông",
-                    "Tour thám hiểm",
-                    "Tour nghỉ dưỡng",
-                    "Tour ẩm thực",
-                    "Tour giáo dục",
-                    "Tour thể thao",
-                    "Tour gia đình",
-                  ].map((cate, index) => (
+                  {cates.map((cate, index) => (
                     <option key={index} value={cate}>
                       {cate}
                     </option>
