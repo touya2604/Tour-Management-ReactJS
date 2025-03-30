@@ -7,11 +7,12 @@ const TourUpdate = () => {
   const [tour, setTour] = useState(null);
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
     const fetchTours = async () => {
       try {
-        const response = await fetch(`http://192.168.55.7:3000/tours`);
+        const response = await fetch(`http://192.168.55.14:3000/tours`);
         if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
 
         const data = await response.json();
@@ -36,7 +37,7 @@ const TourUpdate = () => {
 
   const handleUpdate = async () => {
     try {
-      const response = await fetch(`http://192.168.55.7:3000/tours/${slug}`, {
+      const response = await fetch(`http://192.168.55.14:3000/tours/${slug}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(tour),
@@ -49,6 +50,17 @@ const TourUpdate = () => {
     } catch (error) {
       console.error(error);
       alert("Có lỗi xảy ra khi cập nhật!");
+    }
+  };
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTour((prev) => ({ ...prev, images: reader.result }));
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -66,14 +78,14 @@ const TourUpdate = () => {
                 <input
                   type="text"
                   className="form-control"
-                  value={tour.title || ""}
+                  value={tour.title}
                   onChange={(e) => handleChange(e, "title")}
                 />
               </div>
               <div className="mb-3">
                 <label className="form-label">Thời gian đi:</label>
                 <input
-                  type="datetime-local"
+                  type="date"
                   className="form-control"
                   value={
                     tour.timeStart
@@ -88,12 +100,25 @@ const TourUpdate = () => {
                 <input
                   type="number"
                   className="form-control"
-                  value={tour.price || ""}
+                  min="0"
+                  value={tour.price}
                   onChange={(e) => handleChange(e, "price")}
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Giảm giá (%):</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  min="0"
+                  max="100"
+                  value={tour.discount}
+                  onChange={(e) => handleChange(e, "discount")}
                 />
               </div>
             </form>
           </div>
+
           <div className="col-md-6">
             <form>
               <div className="mb-3">
@@ -101,9 +126,59 @@ const TourUpdate = () => {
                 <input
                   type="number"
                   className="form-control"
-                  value={tour.stock || ""}
+                  min="1"
+                  value={tour.stock}
                   onChange={(e) => handleChange(e, "stock")}
                 />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Thông tin:</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={tour.information}
+                  onChange={(e) => handleChange(e, "information")}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Hình ảnh:</label>
+                <input
+                  type="file"
+                  className="form-control"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                />
+                {previewImage && (
+                  <div className="mt-3">
+                    <img
+                      src={previewImage}
+                      alt="Ảnh xem trước"
+                      className="img-fluid rounded"
+                      style={{ maxWidth: "300px" }}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Trạng thái:</label>
+                <div className="form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id="statusCheckbox"
+                    checked={tour.status === "active"}
+                    onChange={(e) =>
+                      setTour((prev) => ({
+                        ...prev,
+                        status: e.target.checked ? "active" : "disable",
+                      }))
+                    }
+                  />
+                  <label className="form-check-label" htmlFor="statusCheckbox">
+                    {tour.status === "active" ? "Active" : "Disable"}
+                  </label>
+                </div>
               </div>
             </form>
           </div>

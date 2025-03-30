@@ -61,6 +61,9 @@ const Header = ({ checkLog }) => {
         ) : (
           <button onClick={() => navigate("/cart")}>Giỏ hàng</button>
         )}
+        {(checkLog === "admin" || checkLog === "customer") && (
+          <button onClick={() => navigate("/order")}>Lịch sử đặt hàng</button>
+        )}
         {checkLog === "customer" || checkLog === "admin" ? (
           <>
             <button onClick={() => navigate("/user-account")}>

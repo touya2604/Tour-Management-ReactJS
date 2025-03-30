@@ -1,10 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUserLarge,
-  faPlaneUp,
-  faUserMinus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUserLarge, faUserMinus } from "@fortawesome/free-solid-svg-icons";
 import AvaUser from "../assets/images/avatar.jpg";
 import "../styles/management.scss";
 import { useNavigate } from "react-router-dom";
@@ -32,11 +28,6 @@ const Management = ({ user }) => {
           <button onClick={() => navigate("/user-account")}>
             <FontAwesomeIcon icon={faUserLarge} />
             <span className="clickInfo">Thông tin tài khoản</span>
-          </button>
-          <hr />
-          <button onClick={() => navigate("/user-history")}>
-            <FontAwesomeIcon icon={faPlaneUp} />
-            <span className="clickInfo">Lịch sử đặt tour</span>
           </button>
           <hr />
           <button onClick={() => navigate("/user-delete")}>

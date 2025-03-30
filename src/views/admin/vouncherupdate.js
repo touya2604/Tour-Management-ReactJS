@@ -13,7 +13,7 @@ const VoucherUpdate = () => {
     const fetchTours = async () => {
       try {
         const response = await fetch(
-          `http://192.168.55.7:3000${systemConfig.prefixAdmin}/vouchers`
+          `http://192.168.55.14:3000${systemConfig.prefixAdmin}/vouchers`
         );
         if (!response.ok) throw new Error("Lỗi khi lấy danh sách vouncher");
 
@@ -70,7 +70,7 @@ const VoucherUpdate = () => {
 
     try {
       const response = await fetch(
-        `http://192.168.55.7:3000${systemConfig.prefixAdmin}/vouchers/${id}`,
+        `http://192.168.55.14:3000${systemConfig.prefixAdmin}/vouchers/${id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

@@ -23,6 +23,7 @@ import * as systemConfig from "../config/system";
 import UserManage from "./admin/customerManage";
 import CategoryList from "./CategoryList";
 import TourDanhMuc from "./tourDanhMuc";
+import History from "./client/user-history";
 
 const App = () => {
   const [user, setUser] = useState({});
@@ -109,6 +110,7 @@ const App = () => {
           path={`${systemConfig.prefixAdmin}/voucher-add`}
           element={<VouncherAdd />}
         />
+        <Route path={`/order`} element={<History />} />
         <Route
           path={`${systemConfig.prefixAdmin}/voucher-update/:id`}
           element={<VouncherUpdate />}

@@ -2,31 +2,27 @@ import React, { useState, useEffect } from "react";
 import { Pagination } from "react-bootstrap";
 import logoVouncher from "../assets/images/logoFoot.png";
 import "../styles/vouncher.scss";
-
+import * as systemConfig from "../config/system";
+import dayjs from "dayjs";
 const Vouncher = () => {
   const [vouncherList, setVouncherList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
   useEffect(() => {
-    const fetchTours = async () => {
+    const fetchVounchers = async () => {
       try {
-        const response = await fetch("http://192.168.55.5:3000/tours");
-        if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
-
+        const response = await fetch(
+          `http://192.168.55.14:3000${systemConfig.prefixAdmin}/vouchers`
+        );
         const data = await response.json();
-        console.log("API response:", data);
-
-        // setTours(Array.isArray(data) ? data : []);
-        // setFilteredTours(Array.isArray(data) ? data : []);
         setVouncherList(Array.isArray(data.data) ? data.data : []);
       } catch (error) {
-        console.error(error);
+        console.error("Lỗi khi lấy dữ liệu:", error);
       } finally {
       }
     };
-
-    fetchTours();
+    fetchVounchers();
   }, []);
 
   const totalPages = Math.ceil(vouncherList.length / itemsPerPage);
@@ -59,10 +55,12 @@ const Vouncher = () => {
                     </h2>
                     <div>
                       <p className="vouncher-info">
-                        Đơn tối thiểu: {vouncher.minAmount}
+                        Đơn tối thiểu: {vouncher.minAmount}tr
                       </p>
                       <p className="vouncher-info">
-                        Hết hạn sau: {vouncher.expire} ngày
+                        Hết hạn sau:{" "}
+                        {dayjs(vouncher.expired).format("DD/MM/YYYY HH:mm")}{" "}
+                        ngày
                       </p>
                     </div>
                   </div>

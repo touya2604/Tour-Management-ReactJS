@@ -14,7 +14,7 @@ const CategoryList = () => {
     const fetchTours = async () => {
       try {
         const response = await fetch(
-          `http://192.168.55.7:3000${systemConfig.prefixAdmin}/categories`
+          `http://192.168.55.14:3000${systemConfig.prefixAdmin}/categories`
         );
 
         if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");

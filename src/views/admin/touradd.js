@@ -13,9 +13,9 @@ const TourAdd = () => {
     information: "",
     schedule: "",
     timeStart: "",
-    stock: 1, // Số lượng khách tối thiểu là 1
+    stock: 0,
     status: "active",
-    position: 1,
+    position: 0,
     slug: "",
     deleted: 0,
     deletedAt: null,
@@ -25,17 +25,31 @@ const TourAdd = () => {
     price_special: 0,
   });
 
+  const [previewImage, setPreviewImage] = useState(null);
+
   const handleChange = (event, field) => {
     let value = event.target.value;
 
     if (field === "price" || field === "discount" || field === "stock") {
-      value = value ? Math.max(0, parseFloat(value)) : 0; // Không cho giá trị âm
+      value = value ? Math.max(0, parseFloat(value)) : 0;
     }
 
     setTour((prev) => ({
       ...prev,
       [field]: value,
     }));
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTour((prev) => ({ ...prev, images: reader.result }));
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleAddNew = async () => {
@@ -54,7 +68,7 @@ const TourAdd = () => {
     const newTour = {
       ...tour,
       code: tour.code || `TOUR${Math.floor(Math.random() * 1000000)}`,
-      images: JSON.stringify([tour.images]), // Lưu dưới dạng JSON string
+      images: JSON.stringify([tour.images]),
       price: parseFloat(tour.price),
       discount,
       timeStart: tour.timeStart ? dayjs(tour.timeStart).toISOString() : null,
@@ -68,7 +82,7 @@ const TourAdd = () => {
     };
 
     try {
-      const response = await fetch("http://192.168.55.7:3000/tours", {
+      const response = await fetch("http://192.168.55.14:3000/tours", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTour),
@@ -100,6 +114,8 @@ const TourAdd = () => {
         slug: "",
         category_title: "Tour mùa hè",
       });
+
+      setPreviewImage(null);
 
       alert("Tạo mới thành công!");
     } catch (error) {
@@ -156,6 +172,7 @@ const TourAdd = () => {
               </div>
             </form>
           </div>
+
           <div className="col-md-6">
             <form>
               <div className="mb-3">
@@ -169,14 +186,53 @@ const TourAdd = () => {
                 />
               </div>
               <div className="mb-3">
-                <label className="form-label">Hình ảnh:</label>
+                <label className="form-label">Thông tin:</label>
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Nhập URL ảnh"
-                  value={tour.images}
-                  onChange={(e) => handleChange(e, "images")}
+                  value={tour.information}
+                  onChange={(e) => handleChange(e, "information")}
                 />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Hình ảnh:</label>
+                <input
+                  type="file"
+                  className="form-control"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                />
+                {previewImage && (
+                  <div className="mt-3">
+                    <img
+                      src={previewImage}
+                      alt="Ảnh xem trước"
+                      className="img-fluid rounded"
+                      style={{ maxWidth: "300px" }}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Trạng thái:</label>
+                <div className="form-check">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id="statusCheckbox"
+                    checked={tour.status === "active"}
+                    onChange={(e) =>
+                      setTour((prev) => ({
+                        ...prev,
+                        status: e.target.checked ? "active" : "disable",
+                      }))
+                    }
+                  />
+                  <label className="form-check-label" htmlFor="statusCheckbox">
+                    {tour.status === "active" ? "Active" : "Disable"}
+                  </label>
+                </div>
               </div>
             </form>
           </div>

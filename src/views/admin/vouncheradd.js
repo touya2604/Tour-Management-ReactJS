@@ -3,9 +3,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/tourcrud.scss";
 import dayjs from "dayjs";
 import * as systemConfig from "../../config/system";
-
+import { useNavigate } from "react-router-dom";
 const VouncherAdd = () => {
   const [vouncher, setVouncher] = useState({
+    id: 0,
     discount: 0,
     minAmount: 0,
     expire: "",
@@ -15,7 +16,7 @@ const VouncherAdd = () => {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
-
+  const navigate = useNavigate();
   const handleChange = (event, field) => {
     setVouncher((prev) => ({
       ...prev,
@@ -33,13 +34,14 @@ const VouncherAdd = () => {
     }
 
     const newVouncher = {
+      id: null, // Thêm id: null nếu backend yêu cầu
       ...vouncher,
       expire: dayjs(vouncher.expire).toISOString(),
     };
 
     try {
       const response = await fetch(
-        `http://192.168.55.7:3000${systemConfig.prefixAdmin}/vouchers`,
+        `http://192.168.55.14:3000${systemConfig.prefixAdmin}/vouchers`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -57,13 +59,14 @@ const VouncherAdd = () => {
         minAmount: 0,
         expire: "",
         status: "Active",
-        deleted: 0,
+        deleted: false,
         deletedAt: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
 
       alert("Tạo mới thành công!");
+      navigate(`${systemConfig.prefixAdmin}/vouchers`);
     } catch (error) {
       console.error("Lỗi khi thêm voucher:", error);
       alert("Có lỗi xảy ra khi thêm voucher!");
