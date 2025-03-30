@@ -10,38 +10,44 @@ const CategoryList = () => {
   const [cates, setCate] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
+
   useEffect(() => {
-    const fetchTours = async () => {
-      try {
-        const response = await fetch(
-          `http://192.168.55.14:3000${systemConfig.prefixAdmin}/categories`
-        );
-
-        if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
-
-        const data = await response.json();
-        console.log("API response:", data);
-
-        // setTours(Array.isArray(data) ? data : []);
-        // setFilteredTours(Array.isArray(data) ? data : []);
-        setCate(Array.isArray(data.data) ? data.data : []);
-      } catch (error) {
-        console.error(error);
-      } finally {
-      }
-    };
-
-    fetchTours();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(
+        `http://192.168.55.14:3000${systemConfig.prefixAdmin}/categories`
+      );
+      if (!response.ok) throw new Error("Lỗi khi lấy danh sách danh mục");
+
+      const data = await response.json();
+      setCate(Array.isArray(data.data) ? data.data : []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const totalPages = Math.ceil(cates.length / itemsPerPage);
+  const displayedCategories = cates.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="category-list">
       <h2>Danh sách danh mục</h2>
+      <Button
+        variant="success"
+        onClick={() => navigate(`${systemConfig.prefixAdmin}/cates-add`)}
+      >
+        Tạo
+      </Button>
       <div className="grid-container">
-        {cates.map((category) => (
+        {displayedCategories.map((category) => (
           <div key={category.id} className="category-card">
-            <img src={category.image} alt={category.name} />
+            <img src={category.image} alt={category.title} />
             <h3>{category.title}</h3>
             <Button
               variant="primary"
@@ -49,6 +55,17 @@ const CategoryList = () => {
             >
               Xem chi tiết
             </Button>
+            <Button
+              variant="warning"
+              onClick={() =>
+                navigate(
+                  `${systemConfig.prefixAdmin}/cates-upd/${category.slug}`
+                )
+              }
+            >
+              Cập nhật
+            </Button>
+            <Button variant="danger">Xóa</Button>
           </div>
         ))}
       </div>

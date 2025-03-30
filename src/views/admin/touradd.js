@@ -114,13 +114,7 @@ const TourAdd = () => {
       });
 
       if (!response.ok) {
-        let errorText;
-        try {
-          const errorData = await response.json();
-          errorText = errorData.message || "Lỗi không xác định từ server";
-        } catch (e) {
-          errorText = await response.text();
-        }
+        const errorText = await response.text();
         throw new Error(`Lỗi khi thêm mới tour: ${errorText}`);
       }
 
@@ -140,11 +134,10 @@ const TourAdd = () => {
       });
 
       setImages([]);
-
       alert("Tạo mới thành công!");
     } catch (error) {
       console.error("Lỗi khi thêm tour:", error);
-      alert("Có lỗi xảy ra khi thêm tour!");
+      alert(error.message || "Có lỗi xảy ra khi thêm tour!");
     }
   };
 

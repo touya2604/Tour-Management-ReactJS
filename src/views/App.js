@@ -24,6 +24,8 @@ import UserManage from "./admin/customerManage";
 import CategoryList from "./CategoryList";
 import TourDanhMuc from "./tourDanhMuc";
 import History from "./client/user-history";
+import CategoryAdd from "./admin/cateAdd";
+import CategoryUpdate from "./admin/cateUpdate";
 
 const App = () => {
   const [user, setUser] = useState({});
@@ -114,6 +116,14 @@ const App = () => {
         <Route
           path={`${systemConfig.prefixAdmin}/voucher-update/:id`}
           element={<VouncherUpdate />}
+        />
+        <Route
+          path={`${systemConfig.prefixAdmin}/cates-add`}
+          element={<CategoryAdd />}
+        />
+        <Route
+          path={`${systemConfig.prefixAdmin}/cates-upd/:slug`}
+          element={<CategoryUpdate />}
         />
       </Routes>
     </Router>
