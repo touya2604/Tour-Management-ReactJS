@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/sign.scss";
+import * as systemConfig from "../config/system";
 
 const SignInForm = ({ setRole }) => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,7 +25,7 @@ const SignInForm = ({ setRole }) => {
     }
 
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch(`http://192.168.55.14:3000/"`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,7 +33,9 @@ const SignInForm = ({ setRole }) => {
         body: JSON.stringify({
           fullName,
           email,
+          phone,
           password,
+          status: "active",
         }),
       });
 
@@ -42,11 +46,9 @@ const SignInForm = ({ setRole }) => {
       const data = await response.json();
       const { token, role } = data;
 
-      // Lưu token và role vào localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
 
-      // Cập nhật role vào App.js
       setRole(role);
 
       alert("Đăng ký thành công! Đang tự động đăng nhập...");
@@ -72,13 +74,22 @@ const SignInForm = ({ setRole }) => {
           onChange={(e) => setFullName(e.target.value)}
           required
         />
-        <label className="labelInput">Email/SĐT</label>
+        <label className="labelInput">Email</label>
+        <input
+          className="inputField"
+          type="email"
+          placeholder="Nhập email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <label className="labelInput">Số điện thoại</label>
         <input
           className="inputField"
           type="text"
-          placeholder="Nhập email hoặc số điện thoại"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Nhập số điện thoại"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
           required
         />
         <label className="labelInput">Mật khẩu</label>

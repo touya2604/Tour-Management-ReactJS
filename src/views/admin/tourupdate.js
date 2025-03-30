@@ -87,6 +87,12 @@ const TourUpdate = () => {
       reader.readAsDataURL(file);
     });
   };
+  const handleRemoveImage = (index) => {
+    setTour((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index), // Xóa ảnh theo index
+    }));
+  };
 
   const handleUpdate = async () => {
     try {
@@ -214,13 +220,21 @@ const TourUpdate = () => {
                 <div className="mt-3 d-flex flex-wrap">
                   {tour.images &&
                     tour.images.map((img, index) => (
-                      <img
-                        key={index}
-                        src={img}
-                        alt={`Ảnh ${index + 1}`}
-                        className="img-thumbnail m-2"
-                        style={{ maxWidth: "150px", maxHeight: "150px" }}
-                      />
+                      <div key={index} className="position-relative m-2">
+                        <img
+                          src={img}
+                          alt={`Ảnh ${index + 1}`}
+                          className="img-thumbnail"
+                          style={{ maxWidth: "150px", maxHeight: "150px" }}
+                        />
+                        <button
+                          className="btn btn-danger btn-sm position-absolute"
+                          style={{ top: "5px", right: "5px" }}
+                          onClick={() => handleRemoveImage(index)}
+                        >
+                          ❌
+                        </button>
+                      </div>
                     ))}
                 </div>
               </div>

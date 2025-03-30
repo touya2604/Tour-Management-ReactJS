@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/cateAdd.scss";
 import { useNavigate } from "react-router-dom";
 import * as systemConfig from "../../config/system";
-
+import Compressor from "compressorjs";
 const CategoryAdd = () => {
   const [category, setCategory] = useState({
     title: "",

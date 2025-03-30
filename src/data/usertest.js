@@ -5,7 +5,7 @@ const UserTest = [
     fullName: "Tanh",
     phone: "095",
     status: "Good",
-    role: "admin",
+    role: "customer",
   },
 ];
 

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/sign.scss";
+import * as systemConfig from "../config/system";
+import md5 from "md5";
 
 const LoginForm = ({ setRole }) => {
   const [email, setEmail] = useState("");
@@ -16,24 +17,38 @@ const LoginForm = ({ setRole }) => {
     setError("");
 
     try {
-      const response = await axios.post("/api/auth/login", {
-        email,
-        password,
-      });
+      const response = await fetch(
+        `http://192.168.55.14:3000${systemConfig.prefixAdmin}/customers`
+      );
+      if (!response.ok) throw new Error("Không thể lấy dữ liệu người dùng");
 
-      const { token, role } = response.data;
+      const data = await response.json();
+      const users = data.data || [];
 
-      // Lưu token và role vào localStorage
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
+      // Mã hóa mật khẩu để so sánh
+      const hashedPassword = md5(password);
+
+      // Kiểm tra xem email và mật khẩu có khớp không
+      const user = users.find(
+        (u) => u.email === email && u.password === hashedPassword
+      );
+
+      if (!user) {
+        throw new Error("Email hoặc mật khẩu không chính xác");
+      }
+
+      // Lưu thông tin vào localStorage
+      localStorage.setItem("token", user.token);
+      localStorage.setItem("role", user.role);
+      localStorage.setItem("userEmail", user.email);
 
       // Cập nhật role vào App.js
-      setRole(role);
+      setRole(user.role);
 
       alert("Đăng nhập thành công!");
       navigate("/");
     } catch (err) {
-      setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+      setError(err.message);
     }
 
     setLoading(false);

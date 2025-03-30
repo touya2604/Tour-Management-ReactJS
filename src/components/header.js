@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import logoHead from "../assets/images/logoHead.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,9 +8,12 @@ import * as systemConfig from "../config/system";
 
 const Header = ({ checkLog }) => {
   const navigate = useNavigate();
+  const role = checkLog || localStorage.getItem("role") || "";
+
   const handleLogout = () => {
-    // localStorage.removeItem("token");
-    // localStorage.removeItem("role");
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("userEmail");
     window.location.reload();
   };
 
@@ -22,20 +25,24 @@ const Header = ({ checkLog }) => {
       <nav className="nav-header">
         <button onClick={() => navigate("/")}>Trang chủ</button>
         <button onClick={() => navigate("/tour")}>Tour du lịch</button>
-        <button onClick={() => navigate("/newsletter")}>Tin tức</button>
-        {checkLog === "admin" && (
+
+        {role === "admin" ? (
           <button
             onClick={() => navigate(`${systemConfig.prefixAdmin}/categories`)}
           >
-            Danh mục
+            Quản lý danh mục
           </button>
+        ) : (
+          <button onClick={() => navigate("/categories")}>Danh mục</button>
         )}
-        {checkLog === "admin" && (
+
+        {role === "admin" && (
           <button onClick={() => navigate("/revenue")}>
             Quản lý doanh thu
           </button>
         )}
-        {checkLog === "admin" ? (
+
+        {role === "admin" ? (
           <button
             onClick={() => navigate(`${systemConfig.prefixAdmin}/vouchers`)}
           >
@@ -44,15 +51,18 @@ const Header = ({ checkLog }) => {
         ) : (
           <button onClick={() => navigate("/vouncher")}>Mã giảm giá</button>
         )}
-        {checkLog === "admin" && <button>Quản lý đơn hàng</button>}
-        {checkLog === "admin" && (
+
+        {role === "admin" && <button>Quản lý đơn hàng</button>}
+
+        {role === "admin" && (
           <button
             onClick={() => navigate(`${systemConfig.prefixAdmin}/customers`)}
           >
             Quản lý tài khoản
           </button>
         )}
-        {checkLog === "admin" ? (
+
+        {role === "admin" ? (
           <button
             onClick={() => navigate(`${systemConfig.prefixAdmin}/tour-manage`)}
           >
@@ -61,10 +71,18 @@ const Header = ({ checkLog }) => {
         ) : (
           <button onClick={() => navigate("/cart")}>Giỏ hàng</button>
         )}
-        {(checkLog === "admin" || checkLog === "customer") && (
-          <button onClick={() => navigate("/order")}>Lịch sử đặt hàng</button>
+
+        {(role === "admin" || role === "customer") && (
+          <button onClick={() => navigate("/order")}>Thanh toán</button>
         )}
-        {checkLog === "customer" || checkLog === "admin" ? (
+
+        {(role === "admin" || role === "customer") && (
+          <button onClick={() => navigate("/ordersHistory")}>
+            Lịch sử đặt tour
+          </button>
+        )}
+
+        {role === "customer" || role === "admin" ? (
           <>
             <button onClick={() => navigate("/user-account")}>
               <FontAwesomeIcon icon={faUserLarge} /> Tài khoản
@@ -75,10 +93,10 @@ const Header = ({ checkLog }) => {
           </>
         ) : (
           <>
-            <button onClick={() => navigate("/login")} className="inOut">
+            <button onClick={() => navigate("/logIn")} className="inOut">
               Đăng nhập
             </button>
-            <button onClick={() => navigate("/signin")} className="inOut">
+            <button onClick={() => navigate("/signIn")} className="inOut">
               Đăng ký
             </button>
           </>

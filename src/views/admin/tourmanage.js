@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Pagination } from "react-bootstrap";
-import Ph from "../../assets/images/placeholder.jpg";
 import "../../styles/tourmanage.scss";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -20,7 +19,14 @@ const TourManage = () => {
         const data = await response.json();
         console.log("API response:", data);
 
-        setTours(Array.isArray(data.data) ? data.data : []);
+        setTours(
+          Array.isArray(data.data)
+            ? data.data.map((tour) => ({
+                ...tour,
+                images: JSON.parse(tour.images),
+              }))
+            : []
+        );
       } catch (error) {
         console.error(error);
       }
@@ -67,7 +73,7 @@ const TourManage = () => {
                 {displayedTour.map((tour) => (
                   <div key={tour.id} id="vouncher-item">
                     <div id="image-title">
-                      <img src={Ph} alt="img" />
+                      <img src={tour.images} alt="img" />
                       <div>
                         <h2 className="vouncher-title">{tour.title}</h2>
                         <div>

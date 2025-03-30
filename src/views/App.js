@@ -4,9 +4,8 @@ import HomePage from "./homepage";
 import LogIn from "./logIn";
 import SignIn from "./signIn";
 import UserAccount from "./user-account";
-import UserHistory from "./client/user-history";
+import UserHistory from "./client/payment.js";
 import Tour from "./tour";
-import News from "./news";
 import Cart from "./client/cart";
 import Vouncher from "./vouncher";
 import DeleteAcc from "./deleteAccount";
@@ -14,7 +13,6 @@ import TourDetail from "./tourdetail";
 import Header from "../components/header";
 import VouncherManage from "./admin/vounchermanage";
 import TourManage from "./admin/tourmanage";
-import UserTest from "../data/usertest";
 import TourAdd from "./admin/touradd";
 import TourUpdate from "./admin/tourupdate";
 import VouncherAdd from "./admin/vouncheradd";
@@ -23,28 +21,40 @@ import * as systemConfig from "../config/system";
 import UserManage from "./admin/customerManage";
 import CategoryList from "./CategoryList";
 import TourDanhMuc from "./tourDanhMuc";
-import History from "./client/user-history";
 import CategoryAdd from "./admin/cateAdd";
 import CategoryUpdate from "./admin/cateUpdate";
+import OrderDetails from "./orderDetail";
+import Payment from "./client/payment.js";
+import CategoryListCustomer from "./client/categories.js";
+import History from "./orderHistory.js";
 
 const App = () => {
-  const [user, setUser] = useState({});
-  const [role, setRole] = useState("");
+  const [user, setUser] = useState(null);
+  const [role, setRole] = useState(localStorage.getItem("role") || "");
   const [loading, setLoading] = useState(true);
 
-  // const [role, setRole] = useState(localStorage.getItem("role") || "");
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/info");
+        const savedEmail = localStorage.getItem("userEmail");
+        if (!savedEmail) {
+          setLoading(false);
+          return;
+        }
 
-        if (!response.ok) throw new Error("Lỗi khi lấy thong tin account");
+        const response = await fetch("http://localhost:3000");
+        if (!response.ok) throw new Error("Lỗi khi lấy danh sách khách hàng");
 
         const data = await response.json();
-        setUser(data);
+        const foundUser = data.data.find((u) => u.email === savedEmail);
+
+        if (foundUser) {
+          setUser(foundUser);
+          setRole(foundUser.role);
+          localStorage.setItem("role", foundUser.role);
+        }
       } catch (error) {
         console.error(error);
-        setUser(UserTest);
       } finally {
         setLoading(false);
       }
@@ -52,33 +62,31 @@ const App = () => {
 
     fetchUserData();
   }, []);
-  useEffect(() => {
-    if (user[0] && user[0].role) {
-      setRole(user[0].role);
-    }
-  }, [user]);
+
   if (loading) {
     return <div className="loading">Đang tải giao diện người dùng...</div>;
   }
-  // useEffect(() => {
-  //   const savedRole = localStorage.getItem("role");
-  //   if (savedRole) setUser(savedRole);
-  // }, []);
+
   return (
     <Router>
-      <Header checkLog={role} />
+      <Header checkLog={"customer"} />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/logIn" element={<LogIn setUser={setUser} />} />
-        <Route path="/signIn" element={<SignIn />} />
+        <Route
+          path="/logIn"
+          element={<LogIn setUser={setUser} setRole={setRole} />}
+        />
+        <Route
+          path="/signIn"
+          element={<SignIn setUser={setUser} setRole={setRole} />}
+        />
         <Route
           path="/user-account"
-          element={<UserAccount userCheck={user[0]} />}
+          element={<UserAccount userCheck={user} />}
         />
         <Route path="/user-history" element={<UserHistory />} />
         <Route path="/user-delete" element={<DeleteAcc />} />
         <Route path="/tour" element={<Tour />} />
-        <Route path="/newsletter" element={<News />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/vouncher" element={<Vouncher />} />
         <Route path="/tour/detail/:slug" element={<TourDetail />} />
@@ -94,11 +102,11 @@ const App = () => {
           path={`${systemConfig.prefixAdmin}/categories`}
           element={<CategoryList />}
         />
-        <Route path="/tourDanhMuc/:slug" element={<TourDanhMuc />} />
-
+        <Route path="/categories" element={<CategoryListCustomer />} />
+        <Route path="/tourDanhMuc/:title" element={<TourDanhMuc />} />
         <Route
           path={`${systemConfig.prefixAdmin}/tour-manage`}
-          element={<TourManage></TourManage>}
+          element={<TourManage />}
         />
         <Route
           path={`${systemConfig.prefixAdmin}/tour-add`}
@@ -112,7 +120,9 @@ const App = () => {
           path={`${systemConfig.prefixAdmin}/voucher-add`}
           element={<VouncherAdd />}
         />
-        <Route path={`/order`} element={<History />} />
+        <Route path="/order" element={<Payment />} />
+        <Route path="/orderDetail" element={<OrderDetails />} />
+        <Route path="/ordersHistory" element={<History />} />
         <Route
           path={`${systemConfig.prefixAdmin}/voucher-update/:id`}
           element={<VouncherUpdate />}

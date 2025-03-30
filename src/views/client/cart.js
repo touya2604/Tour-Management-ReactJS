@@ -44,25 +44,24 @@ const Cart = () => {
 
     const orderData = {
       id: Date.now(),
-      items: selectedCartItems.map((item) => ({
-        id: item.id,
-        name: item.title,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.images,
-      })),
+      items: selectedCartItems,
+      status: "pending",
     };
 
-    localStorage.setItem("orderHistory", JSON.stringify(orderData));
+    // Đảm bảo `existingOrders` luôn là mảng
+    const existingOrders = JSON.parse(localStorage.getItem("orderHistory"));
+    const orderArray = Array.isArray(existingOrders) ? existingOrders : [];
 
-    setCart(cart.filter((item) => !selectedItems[item.id]));
-    localStorage.setItem(
-      "cart",
-      JSON.stringify(cart.filter((item) => !selectedItems[item.id]))
-    );
+    const updatedOrders = [...orderArray, orderData];
+    localStorage.setItem("orderHistory", JSON.stringify(updatedOrders));
+
+    // Cập nhật giỏ hàng sau khi đặt hàng
+    const updatedCart = cart.filter((item) => !selectedItems[item.id]);
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
 
     setSelectedItems({});
-    navigate("/payment-success");
+    navigate("/order");
   };
 
   const totalAmount = cart.reduce(
