@@ -7,7 +7,6 @@ const TourUpdate = () => {
   const [tour, setTour] = useState(null);
   const { slug } = useParams();
   const navigate = useNavigate();
-  const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
     const fetchTours = async () => {
@@ -22,6 +21,17 @@ const TourUpdate = () => {
           ? data.data.find((t) => t.slug === slug) || null
           : null;
 
+        if (filteredTour) {
+          try {
+            filteredTour.images = JSON.parse(filteredTour.images);
+            if (!Array.isArray(filteredTour.images)) {
+              filteredTour.images = [];
+            }
+          } catch (e) {
+            filteredTour.images = [];
+          }
+        }
+
         setTour(filteredTour);
       } catch (error) {
         console.error(error);
@@ -35,12 +45,37 @@ const TourUpdate = () => {
     setTour((prev) => ({ ...prev, [field]: event.target.value }));
   };
 
+  const handleImageUpload = (event) => {
+    const files = event.target.files;
+    if (files.length === 0) return;
+
+    const newImages = [];
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newImages.push(reader.result);
+        if (newImages.length === files.length) {
+          setTour((prev) => ({
+            ...prev,
+            images: [...(prev.images || []), ...newImages],
+          }));
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleUpdate = async () => {
     try {
+      const updatedTour = {
+        ...tour,
+        images: JSON.stringify(tour.images),
+      };
+
       const response = await fetch(`http://192.168.55.14:3000/tours/${slug}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tour),
+        body: JSON.stringify(updatedTour),
       });
 
       if (!response.ok) throw new Error("Lỗi khi cập nhật tour");
@@ -50,17 +85,6 @@ const TourUpdate = () => {
     } catch (error) {
       console.error(error);
       alert("Có lỗi xảy ra khi cập nhật!");
-    }
-  };
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setTour((prev) => ({ ...prev, images: reader.result }));
-        setPreviewImage(reader.result);
-      };
-      reader.readAsDataURL(file);
     }
   };
 
@@ -147,19 +171,24 @@ const TourUpdate = () => {
                   type="file"
                   className="form-control"
                   accept="image/*"
+                  multiple
                   onChange={handleImageUpload}
                 />
-                {previewImage && (
-                  <div className="mt-3">
-                    <img
-                      src={previewImage}
-                      alt="Ảnh xem trước"
-                      className="img-fluid rounded"
-                      style={{ maxWidth: "300px" }}
-                    />
-                  </div>
-                )}
+                <div className="mt-3 d-flex flex-wrap">
+                  {tour.images &&
+                    tour.images.map((img, index) => (
+                      <img
+                        key={index}
+                        src={img}
+                        alt={`Ảnh ${index + 1}`}
+                        className="img-thumbnail m-2"
+                        style={{ maxWidth: "150px", maxHeight: "150px" }}
+                      />
+                    ))}
+                </div>
               </div>
+
+              {/* Trạng thái: Active hoặc Disable */}
               <div className="mb-3">
                 <label className="form-label">Trạng thái:</label>
                 <div className="form-check">

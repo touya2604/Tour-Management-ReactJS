@@ -4,10 +4,10 @@ import "../../styles/tourcrud.scss";
 import dayjs from "dayjs";
 
 const TourAdd = () => {
+  const [images, setImages] = useState([]);
   const [tour, setTour] = useState({
     title: "",
     code: `TOUR${Math.floor(Math.random() * 1000000)}`,
-    images: "",
     price: 0,
     discount: 0,
     information: "",
@@ -22,18 +22,13 @@ const TourAdd = () => {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     category_title: "Tour mùa hè",
-    price_special: 0,
   });
-
-  const [previewImage, setPreviewImage] = useState(null);
 
   const handleChange = (event, field) => {
     let value = event.target.value;
-
-    if (field === "price" || field === "discount" || field === "stock") {
+    if (["price", "discount", "stock"].includes(field)) {
       value = value ? Math.max(0, parseFloat(value)) : 0;
     }
-
     setTour((prev) => ({
       ...prev,
       [field]: value,
@@ -41,15 +36,20 @@ const TourAdd = () => {
   };
 
   const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
+    const files = event.target.files;
+    if (files.length === 0) return;
+
+    const newImages = [];
+    Array.from(files).forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setTour((prev) => ({ ...prev, images: reader.result }));
-        setPreviewImage(reader.result);
+        newImages.push(reader.result);
+        if (newImages.length === files.length) {
+          setImages(newImages);
+        }
       };
       reader.readAsDataURL(file);
-    }
+    });
   };
 
   const handleAddNew = async () => {
@@ -63,22 +63,21 @@ const TourAdd = () => {
     }
 
     const discount = tour.discount ? parseFloat(tour.discount) : 0;
-    const priceSpecial = Math.round(tour.price * (1 - discount / 100));
 
     const newTour = {
       ...tour,
       code: tour.code || `TOUR${Math.floor(Math.random() * 1000000)}`,
-      images: JSON.stringify([tour.images]),
+      images: JSON.stringify(images),
       price: parseFloat(tour.price),
       discount,
       timeStart: tour.timeStart ? dayjs(tour.timeStart).toISOString() : null,
       stock: parseInt(tour.stock, 10),
       slug: tour.title
         .toLowerCase()
-        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
         .replace(/\s+/g, "-")
         .replace(/[^a-z0-9-]/g, ""),
-      price_special: priceSpecial,
     };
 
     try {
@@ -102,7 +101,6 @@ const TourAdd = () => {
       setTour({
         title: "",
         code: `TOUR${Math.floor(Math.random() * 1000000)}`,
-        images: "",
         price: 0,
         discount: 0,
         information: "",
@@ -115,7 +113,7 @@ const TourAdd = () => {
         category_title: "Tour mùa hè",
       });
 
-      setPreviewImage(null);
+      setImages([]);
 
       alert("Tạo mới thành công!");
     } catch (error) {
@@ -195,25 +193,30 @@ const TourAdd = () => {
                 />
               </div>
 
+              {/* Hỗ trợ tải lên nhiều ảnh */}
               <div className="mb-3">
                 <label className="form-label">Hình ảnh:</label>
                 <input
                   type="file"
                   className="form-control"
                   accept="image/*"
+                  multiple
                   onChange={handleImageUpload}
                 />
-                {previewImage && (
-                  <div className="mt-3">
+                <div className="mt-3 d-flex flex-wrap">
+                  {images.map((img, index) => (
                     <img
-                      src={previewImage}
-                      alt="Ảnh xem trước"
-                      className="img-fluid rounded"
-                      style={{ maxWidth: "300px" }}
+                      key={index}
+                      src={img}
+                      alt={`Ảnh ${index + 1}`}
+                      className="img-thumbnail m-2"
+                      style={{ maxWidth: "150px", maxHeight: "150px" }}
                     />
-                  </div>
-                )}
+                  ))}
+                </div>
               </div>
+
+              {/* Trạng thái: Active hoặc Disable */}
               <div className="mb-3">
                 <label className="form-label">Trạng thái:</label>
                 <div className="form-check">

@@ -23,10 +23,9 @@ const History = () => {
         );
         const result = await response.json();
 
-        console.log("Dữ liệu nhận được từ API:", result); // Kiểm tra dữ liệu
+        console.log("Dữ liệu nhận được từ API:", result);
 
         if (result.data && Array.isArray(result.data)) {
-          // Lọc các voucher có status = "Active"
           const activeVouchers = result.data.filter(
             (voucher) => voucher.status === "Active"
           );
