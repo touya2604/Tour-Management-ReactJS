@@ -94,9 +94,11 @@ const Payment = () => {
   const applyVoucher = (voucher) => {
     const totalAmount = getTotalAmount();
     const discountAmount = (voucher.discount / 100) * totalAmount;
+    localStorage.setItem("finalAmount", discountAmount);
     setSelectedVoucher(voucher);
     setDiscount(discountAmount);
   };
+
   const handleCheckout = async (selectedOrders, orderHistory) => {
     try {
       const token = Cookies.get("tokenUser");
@@ -113,11 +115,10 @@ const Payment = () => {
       const selectedTours = orderHistory
         .filter((order) => selectedOrders.includes(order.id))
         .map((order) => order.id);
-      localStorage.setItem("orderItemsId", JSON.stringify(selectedTours));
       const response = await fetch(
         "http://192.168.55.2:3000/user/paymentPost",
         {
-          method: "GET",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

@@ -35,11 +35,11 @@ const Header = ({ checkLog }) => {
           <button onClick={() => navigate("/categories")}>Danh mục</button>
         )}
 
-        {role === "admin" && (
+        {/* {role === "admin" && (
           <button onClick={() => navigate("/revenue")}>
             Quản lý doanh thu
           </button>
-        )}
+        )} */}
 
         {role === "admin" ? (
           <button
@@ -77,7 +77,7 @@ const Header = ({ checkLog }) => {
 
         {(role === "admin" || role === "customer") && (
           <button onClick={() => navigate("/ordersHistory")}>
-            Lịch sử đặt tour
+            Lịch sử đơn hàng
           </button>
         )}
 

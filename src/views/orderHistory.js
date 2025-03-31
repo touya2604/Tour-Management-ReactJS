@@ -29,7 +29,6 @@ const History = () => {
         );
 
         const data = await response.json();
-        console.log(data.data);
         // console.log(data)
         if (response.ok && data.code === 200) {
           // for (const i of data.data.orderItems) {
@@ -43,8 +42,6 @@ const History = () => {
                 totalAmount: parseFloat(order.price_special) * order.quantity,
               }))
             : [];
-          console.log("Fiuc", processedOrders);
-
           setOrderHistory(processedOrders);
         } else {
           setError(data.message || "Lỗi khi lấy lịch sử đơn hàng!");
@@ -77,20 +74,25 @@ const History = () => {
     }
   };
 
-  const handleRefund = (order) => {
+  const handleRefund = (order) => async () => {
     if (!order.paymentDate || !order.totalAmount) return;
 
-    const today = dayjs();
-    const paymentDate = dayjs(order.paymentDate);
-    const diffDays = today.diff(paymentDate, "day");
-
-    if (diffDays > 3) {
-      alert("Đã quá hạn hoàn tiền!");
-      return;
+    try {
+      const response = await fetch(
+        `http://192.168.55.2:3000/user/refundMoney/${order.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(),
+        }
+      );
+      console.log(response);
+      if (!response.ok) throw new Error("Lỗi");
+      alert(`Trả tiền thành công! (ID: ${order.id})`);
+    } catch (error) {
+      console.error(error);
+      alert("Có lỗi xảy ra ");
     }
-
-    const refundAmount = (order.totalAmount * 0.7).toLocaleString();
-    alert(`Bạn sẽ được hoàn lại 70% tổng tiền: ${refundAmount} VND`);
   };
 
   return (
@@ -106,7 +108,6 @@ const History = () => {
 
       {orderHistory.map((order, index) => (
         <div key={index} className="order-item">
-          {console.log(order.price_special * order.quantity)}
           <div className="order-header">
             <h3 onClick={() => navigate(`/tour/detail/${order.slug}`)}>
               {order.title}
@@ -118,25 +119,21 @@ const History = () => {
               VNĐ
             </p>
             <p>Ngày đặt: {dayjs(order.timeStart).format("DD/MM/YYYY HH:mm")}</p>
-
-            {order.status === "Đã hoàn thành" && order.paymentDate && (
+            {order.status === "completed" && order.paymentDate && (
               <>
                 <p>
                   Ngày thanh toán:{" "}
                   {dayjs(order.paymentDate).format("DD/MM/YYYY HH:mm")}
                 </p>
                 {dayjs().diff(dayjs(order.paymentDate), "day") <= 3 && (
-                  <button
-                    onClick={() => handleRefund(order)}
-                    className="refund-btn"
-                  >
+                  <button onClick={handleRefund(order)} className="refund-btn">
                     Hoàn tiền
                   </button>
                 )}
               </>
             )}
 
-            {order.status === "Đang xử lý" && (
+            {order.status === "pending" && (
               <>
                 <button
                   onClick={handleCancel(order.orderId, order.id)}
