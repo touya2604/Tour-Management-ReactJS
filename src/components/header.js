@@ -12,8 +12,8 @@ const Header = ({ checkLog }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("role");
-    window.location.reload();
     navigate("/");
+    window.location.reload();
   };
 
   return (

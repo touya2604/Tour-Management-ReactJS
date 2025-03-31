@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "../../styles/cart.scss";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
@@ -10,8 +11,9 @@ const Cart = () => {
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
   const role = localStorage.getItem("role");
+  const navigate = useNavigate();
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("scart")) || [];
+    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(savedCart);
   }, []);
 
@@ -45,13 +47,13 @@ const Cart = () => {
         : item
     );
     setCart(updatedCart);
-    localStorage.setItem("scart", JSON.stringify(updatedCart));
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const removeItem = (id) => {
     const updatedCart = cart.filter((item) => item.id !== id);
     setCart(updatedCart);
-    localStorage.setItem("scart", JSON.stringify(updatedCart));
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const handleCheckboxChange = (id) => {
@@ -64,7 +66,7 @@ const Cart = () => {
 
   const handleCheckout = async () => {
     if (role !== "customer" && role !== "admin") {
-      alert("Bạn không có quyền đặt hàng.");
+      alert("Vui lòng đăng nhập trước khi đặt hàng");
       return;
     }
 
@@ -97,13 +99,14 @@ const Cart = () => {
       if (!response.ok) throw new Error("Lỗi khi đặt hàng");
 
       alert("Đặt hàng thành công!");
-      localStorage.removeItem("scart");
+      localStorage.removeItem("cart");
       setCart([]);
       setSelectedItems({});
       setFullName("");
       setEmail("");
       setPhone("");
       setNote("");
+      navigate("/user-history");
     } catch (error) {
       console.error("Lỗi khi gửi đơn hàng:", error);
       alert("Có lỗi xảy ra khi đặt hàng, vui lòng thử lại!");

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Management from "../components/management";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
-import Cookies from "js-cookie"; // Import Cookies để lấy token
+import Cookies from "js-cookie";
 import "../styles/information.scss";
 
 const UserAccount = () => {

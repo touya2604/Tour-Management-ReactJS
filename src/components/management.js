@@ -14,7 +14,6 @@ const Management = () => {
     const fetchTours = async () => {
       try {
         const response = await fetch(`http://localhost:3000/user/info`, {
-          // đổi IP nếu cần
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -27,7 +26,8 @@ const Management = () => {
         }
 
         const data = await response.json();
-        console.log("API Response:", data); // Debug response
+        console.log(data.data);
+        console.log("API Response:", data);
 
         if (data && data.data) {
           setUser(data.data);
@@ -52,7 +52,9 @@ const Management = () => {
         <div id="left-bar-top">
           <img id="avatar" src={AvaUser} alt="avatar" />
           <div id="info">
+            <p>{user.fullName || "Chưa có email"}</p>
             <p>{user.email || "Chưa có email"}</p>
+            <p>{user.phone || "Chưa có email"}</p>
           </div>
         </div>
         <hr />

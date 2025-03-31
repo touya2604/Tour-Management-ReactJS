@@ -27,6 +27,7 @@ import OrderDetails from "./orderDetail";
 import Payment from "./client/payment.js";
 import CategoryListCustomer from "./client/categories.js";
 import History from "./orderHistory.js";
+import ForgotPassword from "./forgotPassword.js";
 const App = () => {
   const [role] = useState(localStorage.getItem("role") || "");
   return (
@@ -43,6 +44,7 @@ const App = () => {
         <Route path="/cart" element={<Cart />} />
         <Route path="/vouncher" element={<Vouncher />} />
         <Route path="/tour/detail/:slug" element={<TourDetail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path={`${systemConfig.prefixAdmin}/vouchers`}
           element={<VouncherManage />}

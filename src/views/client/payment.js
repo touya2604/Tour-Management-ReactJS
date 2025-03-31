@@ -41,7 +41,9 @@ const Payment = () => {
           const processedOrders = Array.isArray(data.data.orderItems)
             ? data.data.orderItems.map((order) => ({
                 ...order,
-                totalAmount: parseFloat(order.price_special) * order.quantity,
+                price: parseInt(order.price, 10) || 0,
+                totalAmount:
+                  parseFloat(order.price_special) * (order.quantity ?? 1),
               }))
             : [];
 
@@ -68,7 +70,12 @@ const Payment = () => {
         const result = await response.json();
         if (result.data && Array.isArray(result.data)) {
           setVouchers(
-            result.data.filter((voucher) => voucher.status === "Active")
+            result.data
+              .filter((voucher) => voucher.status === "Active")
+              .map((voucher) => ({
+                ...voucher,
+                minAmount: parseFloat(voucher.minAmount) * 1_000_000,
+              }))
           );
         }
       } catch (error) {
@@ -85,21 +92,32 @@ const Payment = () => {
         : [...prevSelected, orderId]
     );
   };
+
   const getTotalAmount = () => {
-    return orderHistory
-      .filter((order) => selectedOrders.includes(order.id))
-      .reduce((sum, order) => sum + order.totalAmount, 0);
+    return orderHistory.reduce(
+      (sum, order) => sum + (order.totalAmount || 0),
+      0
+    );
   };
 
   const applyVoucher = (voucher) => {
     const totalAmount = getTotalAmount();
+    console.log(totalAmount);
+    console.log(voucher.minAmount);
+    if (totalAmount < voucher.minAmount) {
+      alert(
+        `Voucher này chỉ áp dụng cho đơn hàng tối thiểu ${voucher.minAmount.toLocaleString()} VND`
+      );
+      return;
+    }
+
     const discountAmount = (voucher.discount / 100) * totalAmount;
     localStorage.setItem("finalAmount", discountAmount);
     setSelectedVoucher(voucher);
     setDiscount(discountAmount);
   };
 
-  const handleCheckout = async (selectedOrders, orderHistory) => {
+  const handleCheckout = async () => {
     try {
       const token = Cookies.get("tokenUser");
       if (!token) {
@@ -115,6 +133,7 @@ const Payment = () => {
       const selectedTours = orderHistory
         .filter((order) => selectedOrders.includes(order.id))
         .map((order) => order.id);
+
       const response = await fetch(
         "http://192.168.55.2:3000/user/paymentPost",
         {
@@ -126,6 +145,7 @@ const Payment = () => {
           body: JSON.stringify({ orderItemsId: selectedTours }),
         }
       );
+
       const data = await response.json();
       if (response.ok && data.code === 200) {
         alert("Thanh toán thành công");
@@ -159,10 +179,10 @@ const Payment = () => {
             <h3 onClick={() => navigate(`/tour/detail/${order.slug}`)}>
               {order.title}
             </h3>
-            <p>Giá gốc: {(order.price ?? 0).toLocaleString()} VND</p>
+            <p>Giá gốc: {order.price.toLocaleString()} VND</p>
             <p>Giảm giá: {order.discount ?? 0}%</p>
             <p>Số lượng: {order.quantity ?? 1}</p>
-            <p>Thành tiền: {(order.totalAmount ?? 0).toLocaleString()} VND</p>
+            <p>Thành tiền: {order.totalAmount.toLocaleString()} VND</p>
           </div>
           <img src={order.images} alt={order.title} className="payment-image" />
         </div>
@@ -175,13 +195,18 @@ const Payment = () => {
             vouchers.map((voucher) => (
               <div key={voucher.id} className="voucher-item">
                 <img src={Ph} alt="Voucher" />
-                <p>
-                  <strong>Giảm {voucher.discount}%</strong>
-                </p>
-                <p>
-                  Hạn sử dụng:{" "}
-                  {dayjs(voucher.timeStart).format("DD/MM/YYYY HH:mm")}
-                </p>
+                <div className="voucher-info">
+                  <p>
+                    <strong>Giảm {voucher.discount}%</strong>
+                    <span className="voucher-expiry">
+                      Ngày hết hạn:{" "}
+                      {dayjs(voucher.timeEnd).format("DD/MM/YYYY")}
+                    </span>
+                  </p>
+                  <p>
+                    Số tiền tối thiểu: {voucher.minAmount.toLocaleString()} VND
+                  </p>
+                </div>
                 <button onClick={() => applyVoucher(voucher)}>Dùng</button>
               </div>
             ))
@@ -199,7 +224,6 @@ const Payment = () => {
           {(getTotalAmount() - discount).toLocaleString()} VND
         </p>
       </div>
-
       <div className="payment-actions">
         <button
           className="btn-voucher"
@@ -207,10 +231,7 @@ const Payment = () => {
         >
           Sử dụng voucher
         </button>
-        <button
-          className="btn-checkout"
-          onClick={() => handleCheckout(selectedOrders, orderHistory)}
-        >
+        <button className="btn-checkout" onClick={handleCheckout}>
           Thanh toán
         </button>
       </div>

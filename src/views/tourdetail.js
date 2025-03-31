@@ -6,7 +6,7 @@ const TourDetail = () => {
   const { slug } = useParams();
   const [tour, setTour] = useState(null);
   const [cart, setCart] = useState(() => {
-    return JSON.parse(localStorage.getItem("scart")) || [];
+    return JSON.parse(localStorage.getItem("cart")) || [];
   });
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const TourDetail = () => {
     }
 
     setCart(updatedCart);
-    localStorage.setItem("scart", JSON.stringify(updatedCart));
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
     alert("Đã thêm vào giỏ hàng!");
   };
 

@@ -147,4 +147,25 @@
       color: #d9534f;
     }
   }
+  .cart-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+
+    .checkout-btn {
+      background: #28a745;
+      color: #fff;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+
+      &:hover {
+        background: #218838;
+      }
+    }
+  }
 }
