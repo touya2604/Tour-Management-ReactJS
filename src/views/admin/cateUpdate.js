@@ -13,7 +13,7 @@ const CategoryUpdate = () => {
     const fetchTours = async () => {
       try {
         const response = await fetch(
-          `http://192.168.55.14:3000${systemConfig.prefixAdmin}/categories`
+          `http://192.168.55.3:3000${systemConfig.prefixAdmin}/categories`
         );
         if (!response.ok) throw new Error("Lỗi khi lấy danh sách danh mục");
 
@@ -50,7 +50,7 @@ const CategoryUpdate = () => {
   const handleUpdate = async () => {
     try {
       const response = await fetch(
-        `http://192.168.55.14:3000${systemConfig.prefixAdmin}/categories/${slug}`,
+        `http://192.168.55.3:3000${systemConfig.prefixAdmin}/categories/${slug}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./homepage";
 import LogIn from "./logIn";
@@ -27,67 +27,22 @@ import OrderDetails from "./orderDetail";
 import Payment from "./client/payment.js";
 import CategoryListCustomer from "./client/categories.js";
 import History from "./orderHistory.js";
-
+import UserTest from "../data/usertest.js";
 const App = () => {
-  const [user, setUser] = useState(null);
-  const [role, setRole] = useState(localStorage.getItem("role") || "");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const savedEmail = localStorage.getItem("userEmail");
-        if (!savedEmail) {
-          setLoading(false);
-          return;
-        }
-
-        const response = await fetch("http://localhost:3000");
-        if (!response.ok) throw new Error("Lỗi khi lấy danh sách khách hàng");
-
-        const data = await response.json();
-        const foundUser = data.data.find((u) => u.email === savedEmail);
-
-        if (foundUser) {
-          setUser(foundUser);
-          setRole(foundUser.role);
-          localStorage.setItem("role", foundUser.role);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
-  if (loading) {
-    return <div className="loading">Đang tải giao diện người dùng...</div>;
-  }
-
+  // const [role, setRole] = useState(localStorage.getItem("role") || "");
+  const [role, setRole] = useState(UserTest[0].role);
   return (
     <Router>
-      <Header checkLog={"customer"} />
+      <Header checkLog={role || "customer"} />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route
-          path="/logIn"
-          element={<LogIn setUser={setUser} setRole={setRole} />}
-        />
-        <Route
-          path="/signIn"
-          element={<SignIn setUser={setUser} setRole={setRole} />}
-        />
-        <Route
-          path="/user-account"
-          element={<UserAccount userCheck={user} />}
-        />
+        <Route path="/logIn" element={<LogIn setRole={setRole} />} />
+        <Route path="/signIn" element={<SignIn setRole={setRole} />} />
+        <Route path="/user-account" element={<UserAccount />} />
         <Route path="/user-history" element={<UserHistory />} />
         <Route path="/user-delete" element={<DeleteAcc />} />
         <Route path="/tour" element={<Tour />} />
-        <Route path="/cart" element={<Cart />} />
+        <Route path="/cart" element={<Cart role={role} />} />
         <Route path="/vouncher" element={<Vouncher />} />
         <Route path="/tour/detail/:slug" element={<TourDetail />} />
         <Route

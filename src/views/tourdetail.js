@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../styles/tourdetail.scss";
+
 const TourDetail = () => {
   const { slug } = useParams();
   const [tour, setTour] = useState(null);
   const [cart, setCart] = useState(() => {
-    return JSON.parse(localStorage.getItem("cart")) || [];
+    return JSON.parse(localStorage.getItem("scart")) || [];
   });
 
   useEffect(() => {
     const fetchTours = async () => {
       try {
-        const response = await fetch(`http://192.168.55.14:3000/tours`);
+        const response = await fetch(`http://192.168.55.3:3000/tours`);
         if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
 
         const data = await response.json();
@@ -39,7 +40,6 @@ const TourDetail = () => {
   if (!tour) return <p>Đang tải dữ liệu...</p>;
 
   const handleAddToCart = () => {
-    const tourItem = { ...tour, quantity: 1 };
     const existingItem = cart.find((item) => item.id === tour.id);
     let updatedCart;
 
@@ -48,11 +48,11 @@ const TourDetail = () => {
         item.id === tour.id ? { ...item, quantity: item.quantity + 1 } : item
       );
     } else {
-      updatedCart = [...cart, tourItem];
+      updatedCart = [...cart, { id: tour.id, quantity: 1 }];
     }
 
     setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    localStorage.setItem("scart", JSON.stringify(updatedCart));
     alert("Đã thêm vào giỏ hàng!");
   };
 

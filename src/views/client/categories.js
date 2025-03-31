@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Pagination } from "react-bootstrap";
 import "../../styles/CategoryList.scss";
-import * as systemConfig from "../../config/system";
 import { useNavigate } from "react-router-dom";
 
 const itemsPerPage = 5;
@@ -17,9 +16,7 @@ const CategoryListCustomer = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(
-        `http://192.168.55.14:3000${systemConfig.prefixAdmin}/categories`
-      );
+      const response = await fetch(`http://192.168.55.3:3000/categories`);
       if (!response.ok) throw new Error("Lỗi khi lấy danh sách danh mục");
 
       const data = await response.json();
