@@ -3,7 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/cateAdd.scss";
 import { useNavigate } from "react-router-dom";
 import * as systemConfig from "../../config/system";
-import Compressor from "compressorjs";
 const CategoryAdd = () => {
   const [category, setCategory] = useState({
     title: "",
@@ -48,7 +47,7 @@ const CategoryAdd = () => {
     };
     try {
       const response = await fetch(
-        `http://192.168.55.3:3000${systemConfig.prefixAdmin}/categories`,
+        `http://192.168.55.2:3000${systemConfig.prefixAdmin}/categories`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

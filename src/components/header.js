@@ -11,10 +11,9 @@ const Header = ({ checkLog }) => {
   const role = checkLog || localStorage.getItem("role") || "";
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
     localStorage.removeItem("role");
-    localStorage.removeItem("userEmail");
     window.location.reload();
+    navigate("/");
   };
 
   return (

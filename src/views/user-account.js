@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import Management from "../components/management";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
+import Cookies from "js-cookie"; // Import Cookies để lấy token
 import "../styles/information.scss";
 
-const UserAccount = ({ userCheck }) => {
+const UserAccount = () => {
   const [user, setUser] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState({
@@ -13,17 +14,46 @@ const UserAccount = ({ userCheck }) => {
     phone: false,
   });
 
+  const token = Cookies.get("tokenUser");
+
   useEffect(() => {
-    try {
-      if (userCheck.status === "Xấu")
-        throw new Error("Thông tin người dùng ko được hiển thị");
-      setUser(userCheck);
-    } catch (error) {
-      console.error("Lỗi khi tải thông tin người dùng:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userCheck]);
+    const fetchUserInfo = async () => {
+      if (!token) {
+        console.error("Không tìm thấy token!");
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:3000/user/info", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Lỗi HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("API Response:", data);
+
+        if (data && data.data) {
+          setUser(data.data);
+        } else {
+          console.error("API không trả về dữ liệu hợp lệ");
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải thông tin người dùng:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, [token]);
 
   const handleEdit = (field) => {
     setIsEditing((prev) => ({ ...prev, [field]: true }));
@@ -31,10 +61,14 @@ const UserAccount = ({ userCheck }) => {
 
   const handleSave = async () => {
     setIsLoading(true);
+    console.log(user);
     try {
-      const response = await fetch("https://api.example.com/update-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch("http://localhost:3000/user/info", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(user),
       });
 
@@ -55,9 +89,7 @@ const UserAccount = ({ userCheck }) => {
 
   return (
     <div id="container-account">
-      <Management
-        user={{ email: user.email, status: user.status, role: user.role }}
-      />
+      <Management user={user} />
       <div id="right-bar">
         <h1 id="right-bar-top">Tài khoản</h1>
         {isLoading ? (
@@ -72,7 +104,7 @@ const UserAccount = ({ userCheck }) => {
                   id="mail-field"
                   className="info-field"
                   type="text"
-                  value={user.email}
+                  value={user.email || ""}
                   onChange={(event) => handleChange(event, "email")}
                   disabled={!isEditing.email}
                 />
@@ -91,7 +123,7 @@ const UserAccount = ({ userCheck }) => {
                   id="name-field"
                   className="info-field"
                   type="text"
-                  value={user.fullName}
+                  value={user.fullName || ""}
                   onChange={(event) => handleChange(event, "fullName")}
                   disabled={!isEditing.fullName}
                 />
@@ -114,7 +146,7 @@ const UserAccount = ({ userCheck }) => {
                   id="phone-field"
                   className="info-field"
                   type="text"
-                  value={user.phone}
+                  value={user.phone || ""}
                   onChange={(event) => handleChange(event, "phone")}
                   disabled={!isEditing.phone}
                 />

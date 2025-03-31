@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/sign.scss";
-import * as systemConfig from "../config/system";
-import md5 from "md5";
-
+import Cookies from "js-cookie";
 const LoginForm = ({ setRole }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,40 +13,32 @@ const LoginForm = ({ setRole }) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     try {
-      const response = await fetch(
-        `http://192.168.55.3:3000${systemConfig.prefixAdmin}/customers`
-      );
-      if (!response.ok) throw new Error("Không thể lấy dữ liệu người dùng");
-
-      const data = await response.json();
-      const users = data.data || [];
-
-      // Mã hóa mật khẩu để so sánh
-      const hashedPassword = md5(password);
-
-      // Kiểm tra xem email và mật khẩu có khớp không
-      const user = users.find(
-        (u) => u.email === email && u.password === hashedPassword
-      );
-
-      if (!user) {
-        throw new Error("Email hoặc mật khẩu không chính xác");
+      const response = await fetch(`http://192.168.55.2:3000/user/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+      console.log(email);
+      console.log(password);
+      if (!response.ok) {
+        throw new Error("Đăng nhập thất bại!");
       }
+      const data = await response.json();
 
-      // Lưu thông tin vào localStorage
-      localStorage.setItem("token", user.token);
-      localStorage.setItem("role", user.role);
-      localStorage.setItem("userEmail", user.email);
-
-      // Cập nhật role vào App.js
-      setRole(user.role);
+      const { tokenUser, role } = data.data;
+      Cookies.set("tokenUser", tokenUser, { expires: 7, secure: true });
+      localStorage.setItem("role", role);
 
       alert("Đăng nhập thành công!");
       navigate("/");
     } catch (err) {
-      setError(err.message);
+      setError("Đăng nhập thất bại. Vui lòng thử lại!");
     }
 
     setLoading(false);
@@ -59,7 +49,7 @@ const LoginForm = ({ setRole }) => {
       <h1>Đăng nhập tài khoản</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form id="formInput" onSubmit={handleLogin}>
-        <label className="labelInput">Email/SĐT</label>
+        <label className="labelInput">Email</label>
         <input
           className="inputField"
           type="text"

@@ -27,17 +27,15 @@ import OrderDetails from "./orderDetail";
 import Payment from "./client/payment.js";
 import CategoryListCustomer from "./client/categories.js";
 import History from "./orderHistory.js";
-import UserTest from "../data/usertest.js";
 const App = () => {
-  // const [role, setRole] = useState(localStorage.getItem("role") || "");
-  const [role, setRole] = useState(UserTest[0].role);
+  const [role] = useState(localStorage.getItem("role") || "");
   return (
     <Router>
-      <Header checkLog={role || "customer"} />
+      <Header checkLog={role} />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/logIn" element={<LogIn setRole={setRole} />} />
-        <Route path="/signIn" element={<SignIn setRole={setRole} />} />
+        <Route path="/logIn" element={<LogIn />} />
+        <Route path="/signIn" element={<SignIn />} />
         <Route path="/user-account" element={<UserAccount />} />
         <Route path="/user-history" element={<UserHistory />} />
         <Route path="/user-delete" element={<DeleteAcc />} />

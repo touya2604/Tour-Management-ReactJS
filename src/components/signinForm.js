@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/sign.scss";
-import * as systemConfig from "../config/system";
 
 const SignInForm = ({ setRole }) => {
   const [fullName, setFullName] = useState("");
@@ -25,7 +24,7 @@ const SignInForm = ({ setRole }) => {
     }
 
     try {
-      const response = await fetch(`http://192.168.55.3:3000/"`, {
+      const response = await fetch(`http://192.168.55.2:3000/user/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,7 +34,6 @@ const SignInForm = ({ setRole }) => {
           email,
           phone,
           password,
-          status: "active",
         }),
       });
 
@@ -43,16 +41,8 @@ const SignInForm = ({ setRole }) => {
         throw new Error("Đăng ký thất bại!");
       }
 
-      const data = await response.json();
-      const { token, role } = data;
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
-
-      setRole(role);
-
-      alert("Đăng ký thành công! Đang tự động đăng nhập...");
-      navigate("/");
+      alert("Đăng ký thành công!");
+      navigate("/logIn");
     } catch (err) {
       setError("Đăng ký thất bại. Vui lòng thử lại!");
     }

@@ -18,14 +18,14 @@ const Cart = ({ role }) => {
   useEffect(() => {
     const fetchTours = async () => {
       try {
-        const response = await fetch("http://192.168.55.3:3000/tours");
+        const response = await fetch("http://192.168.55.2:3000/tours");
         if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
         const data = await response.json();
 
         const tourData = Array.isArray(data.data)
           ? data.data.map((tour) => ({
               ...tour,
-              images: tour.images ? JSON.parse(tour.images) : [], // Parse ảnh
+              images: tour.images ? JSON.parse(tour.images) : [],
             }))
           : [];
 
@@ -80,12 +80,11 @@ const Cart = ({ role }) => {
 
     const orderData = {
       customerInfo: { fullName, email, phone, note },
-      items: selectedCartItems,
-      status: "pending",
+      cart: selectedCartItems,
     };
 
     try {
-      const response = await fetch("http://192.168.55.3:3000/orders", {
+      const response = await fetch("http://192.168.55.2:3000/cart", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

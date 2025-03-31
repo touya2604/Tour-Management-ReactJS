@@ -13,7 +13,7 @@ const TourManage = () => {
   useEffect(() => {
     const fetchTours = async () => {
       try {
-        const response = await fetch(`http://192.168.55.3:3000/tours`);
+        const response = await fetch(`http://192.168.55.2:3000/tours`);
         if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
 
         const data = await response.json();

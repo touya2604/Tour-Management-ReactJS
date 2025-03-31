@@ -1,12 +1,50 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserLarge, faUserMinus } from "@fortawesome/free-solid-svg-icons";
 import AvaUser from "../assets/images/avatar.jpg";
 import "../styles/management.scss";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
-const Management = ({ user }) => {
+const Management = () => {
+  const [user, setUser] = React.useState({});
   let navigate = useNavigate();
+  const token = Cookies.get("tokenUser");
+  useEffect(() => {
+    const fetchTours = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/user/info`, {
+          // đổi IP nếu cần
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("API Response:", data); // Debug response
+
+        if (data && data.data) {
+          setUser(data.data);
+        } else {
+          console.error("Lỗi: API không trả về dữ liệu hợp lệ");
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải thông tin người dùng:", error);
+      }
+    };
+
+    if (token) {
+      fetchTours();
+    } else {
+      console.error("Không tìm thấy token!");
+    }
+  }, [token]);
 
   return (
     <>
@@ -15,12 +53,6 @@ const Management = ({ user }) => {
           <img id="avatar" src={AvaUser} alt="avatar" />
           <div id="info">
             <p>{user.email || "Chưa có email"}</p>
-            <p>
-              Trạng thái: <span>{user.status || "Không xác định"}</span>
-            </p>
-            <p>
-              Quyền: <span>{user.role || "Khách hàng"}</span>
-            </p>
           </div>
         </div>
         <hr />

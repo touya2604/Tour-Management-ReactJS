@@ -18,7 +18,7 @@ const CategoryList = () => {
   const fetchCategories = async () => {
     try {
       const response = await fetch(
-        `http://192.168.55.3:3000${systemConfig.prefixAdmin}/categories`
+        `http://192.168.55.2:3000${systemConfig.prefixAdmin}/categories`
       );
       if (!response.ok) throw new Error("Lỗi khi lấy danh sách danh mục");
 
