@@ -63,7 +63,7 @@ const UserAccount = () => {
     setIsLoading(true);
     console.log(user);
     try {
-      const response = await fetch("http://localhost:3000/user/info", {
+      const response = await fetch("http://localhost:3000/user/editInfo", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

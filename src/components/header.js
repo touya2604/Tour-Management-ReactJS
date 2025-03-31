@@ -72,7 +72,7 @@ const Header = ({ checkLog }) => {
         )}
 
         {(role === "admin" || role === "customer") && (
-          <button onClick={() => navigate("/order")}>Thanh toán</button>
+          <button onClick={() => navigate("/payment")}>Thanh toán</button>
         )}
 
         {(role === "admin" || role === "customer") && (

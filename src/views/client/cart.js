@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "../../styles/cart.scss";
 
-const Cart = ({ role }) => {
+const Cart = () => {
   const [cart, setCart] = useState([]);
   const [selectedItems, setSelectedItems] = useState({});
   const [tours, setTours] = useState([]);
@@ -9,7 +9,7 @@ const Cart = ({ role }) => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
-
+  const role = localStorage.getItem("role");
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("scart")) || [];
     setCart(savedCart);
@@ -55,6 +55,7 @@ const Cart = ({ role }) => {
   };
 
   const handleCheckboxChange = (id) => {
+    console.log(role);
     setSelectedItems((prev) => ({
       ...prev,
       [id]: !prev[id],
@@ -82,9 +83,10 @@ const Cart = ({ role }) => {
       customerInfo: { fullName, email, phone, note },
       cart: selectedCartItems,
     };
+    console.log(orderData);
 
     try {
-      const response = await fetch("http://192.168.55.2:3000/cart", {
+      const response = await fetch("http://192.168.55.2:3000/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

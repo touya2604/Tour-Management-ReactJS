@@ -40,7 +40,7 @@ const App = () => {
         <Route path="/user-history" element={<UserHistory />} />
         <Route path="/user-delete" element={<DeleteAcc />} />
         <Route path="/tour" element={<Tour />} />
-        <Route path="/cart" element={<Cart role={role} />} />
+        <Route path="/cart" element={<Cart />} />
         <Route path="/vouncher" element={<Vouncher />} />
         <Route path="/tour/detail/:slug" element={<TourDetail />} />
         <Route
@@ -73,7 +73,7 @@ const App = () => {
           path={`${systemConfig.prefixAdmin}/voucher-add`}
           element={<VouncherAdd />}
         />
-        <Route path="/order" element={<Payment />} />
+        <Route path="/payment" element={<Payment />} />
         <Route path="/orderDetail" element={<OrderDetails />} />
         <Route path="/ordersHistory" element={<History />} />
         <Route

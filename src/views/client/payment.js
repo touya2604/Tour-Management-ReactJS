@@ -1,41 +1,62 @@
 import React, { useState, useEffect } from "react";
-import "../../styles/history.scss";
-import * as systemConfig from "../../config/system";
+import Cookies from "js-cookie";
+import "../../styles/payment.scss";
 import dayjs from "dayjs";
 import Ph from "../../assets/images/logoFoot.png";
 import { useNavigate } from "react-router-dom";
+import * as systemConfig from "../../config/system";
 
 const Payment = () => {
-  const [cartItems, setCartItems] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [orderHistory, setOrderHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [showVoucherList, setShowVoucherList] = useState(false);
   const [vouchers, setVouchers] = useState([]);
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [discount, setDiscount] = useState(0);
+  const [selectedOrders, setSelectedOrders] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    try {
-      const orderHistory =
-        JSON.parse(localStorage.getItem("orderHistory")) || [];
-      if (!Array.isArray(orderHistory)) {
-        console.error("Dữ liệu orderHistory không hợp lệ.");
-        setCartItems([]);
-        return;
+    const fetchOrders = async () => {
+      try {
+        const token = Cookies.get("tokenUser");
+        if (!token) {
+          setError("Vui lòng đăng nhập để xem lịch sử đặt tour!");
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(
+          "http://192.168.55.2:3000/user/tourBookingHistory",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await response.json();
+        if (response.ok && data.code === 200) {
+          const processedOrders = Array.isArray(data.data.orderItems)
+            ? data.data.orderItems.map((order) => ({
+                ...order,
+                totalAmount: parseFloat(order.price_special) * order.quantity,
+              }))
+            : [];
+
+          setOrderHistory(processedOrders);
+        } else {
+          setError(data.message || "Lỗi khi lấy lịch sử đơn hàng!");
+        }
+      } catch (err) {
+        console.error("Lỗi khi fetch đơn hàng:", err);
+        setError("Không thể kết nối đến server!");
+      } finally {
+        setLoading(false);
       }
-
-      // Lấy danh sách đơn hàng có trạng thái "pending"
-      const pendingOrders = orderHistory.filter(
-        (order) => order.status === "pending"
-      );
-
-      // Gộp tất cả tour từ các đơn "pending"
-      const selectedTours = pendingOrders.flatMap((order) => order.items);
-
-      setCartItems(selectedTours);
-    } catch (error) {
-      console.error("Lỗi khi đọc dữ liệu từ localStorage:", error);
-      setCartItems([]);
-    }
+    };
+    fetchOrders();
   }, []);
 
   useEffect(() => {
@@ -49,8 +70,6 @@ const Payment = () => {
           setVouchers(
             result.data.filter((voucher) => voucher.status === "Active")
           );
-        } else {
-          console.error("Dữ liệu trả về không đúng định dạng!");
         }
       } catch (error) {
         console.error("Lỗi khi tải voucher:", error);
@@ -59,138 +78,138 @@ const Payment = () => {
     if (showVoucherList) fetchVouchers();
   }, [showVoucherList]);
 
-  const handleCheckboxChange = (id) => {
-    setSelectedItems((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+  const toggleOrderSelection = (orderId) => {
+    setSelectedOrders((prevSelected) =>
+      prevSelected.includes(orderId)
+        ? prevSelected.filter((id) => id !== orderId)
+        : [...prevSelected, orderId]
     );
+  };
+  const getTotalAmount = () => {
+    return orderHistory
+      .filter((order) => selectedOrders.includes(order.id))
+      .reduce((sum, order) => sum + order.totalAmount, 0);
   };
 
   const applyVoucher = (voucher) => {
+    const totalAmount = getTotalAmount();
+    const discountAmount = (voucher.discount / 100) * totalAmount;
     setSelectedVoucher(voucher);
-    setShowVoucherList(false);
+    setDiscount(discountAmount);
   };
-
-  const totalPrice = cartItems
-    .filter((item) => selectedItems.includes(item.id))
-    .reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0);
-
-  const discount = selectedVoucher
-    ? (totalPrice * (selectedVoucher.discount || 0)) / 100
-    : 0;
-  const finalAmount = Math.max(totalPrice - discount, 0);
-
-  const handleCheckout = () => {
-    if (selectedItems.length === 0) {
-      alert("Chưa chọn sản phẩm để thanh toán!");
-      return;
-    }
-
-    let orderHistory = JSON.parse(localStorage.getItem("orderHistory")) || [];
-    if (!Array.isArray(orderHistory)) orderHistory = [];
-
-    // Cập nhật trạng thái của các đơn hàng "pending" thành "paid"
-    const newOrders = orderHistory.map((order) => {
-      if (
-        order.status === "pending" &&
-        order.items.some((item) => selectedItems.includes(item.id))
-      ) {
-        return order; // Giữ nguyên đơn cũ
+  const handleCheckout = async (selectedOrders, orderHistory) => {
+    try {
+      const token = Cookies.get("tokenUser");
+      if (!token) {
+        alert("Bạn cần đăng nhập để thanh toán.");
+        return;
       }
-      return order;
-    });
 
-    // Tạo bản ghi mới cho đơn đã thanh toán
-    const paidOrders = orderHistory
-      .filter((order) => order.status === "pending")
-      .map((order) => ({
-        ...order,
-        id: Date.now(), // Tạo ID mới để giữ lịch sử đơn
-        status: "paid",
-      }));
+      if (selectedOrders.length === 0) {
+        alert("Vui lòng chọn ít nhất một đơn hàng để thanh toán!");
+        return;
+      }
 
-    const updatedOrderHistory = [...newOrders, ...paidOrders];
-
-    localStorage.setItem("orderHistory", JSON.stringify(updatedOrderHistory));
-
-    alert("Thanh toán thành công!");
-    navigate("/orderDetail");
+      const selectedTours = orderHistory
+        .filter((order) => selectedOrders.includes(order.id))
+        .map((order) => order.id);
+      localStorage.setItem("orderItemsId", JSON.stringify(selectedTours));
+      const response = await fetch(
+        "http://192.168.55.2:3000/user/paymentPost",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ orderItemsId: selectedTours }),
+        }
+      );
+      const data = await response.json();
+      if (response.ok && data.code === 200) {
+        alert("Thanh toán thành công");
+        navigate("/orderDetail");
+      } else {
+        alert("Thanh toán thất bại: " + data.message);
+      }
+    } catch (error) {
+      console.error("Lỗi khi gửi yêu cầu thanh toán:", error);
+      alert("Không thể kết nối đến server.");
+    }
   };
 
   return (
-    <div className="cart-container">
-      <h2>Thanh toán</h2>
-      <div className="content-wrapper">
-        <div className="cart-items">
-          {cartItems.length === 0 ? (
-            <p>Chưa có đơn hàng nào.</p>
-          ) : (
-            cartItems.map((item) => {
-              const quantity = item.quantity || 1;
-              const price = item.price || 0;
-              const total = price * quantity;
-              const imageSrc = Array.isArray(item.images)
-                ? item.images[0]
-                : item.images;
+    <div className="payment-container">
+      <h2>Thanh Toán</h2>
+      {loading && <p>Đang tải...</p>}
+      {error && <p className="error-message">{error}</p>}
+      {orderHistory.length === 0 && !loading && !error && (
+        <p>Không có đơn hàng nào.</p>
+      )}
 
-              return (
-                <div key={item.id} className="cart-item">
-                  <input
-                    type="checkbox"
-                    checked={selectedItems.includes(item.id)}
-                    onChange={() => handleCheckboxChange(item.id)}
-                  />
-                  <img src={imageSrc} alt={item.title} className="tour-image" />
-                  <div className="tour-info">
-                    <h3>{item.title}</h3>
-                    <p className="price">{price.toLocaleString()} VNĐ</p>
-                    <p className="quantity">Số lượng: {quantity}</p>
-                    <p className="total-price">
-                      Tổng: {total.toLocaleString()} VNĐ
-                    </p>
-                  </div>
-                </div>
-              );
-            })
+      {orderHistory.map((order) => (
+        <div key={order.id} className="payment-item">
+          <input
+            type="checkbox"
+            checked={selectedOrders.includes(order.id)}
+            onChange={() => toggleOrderSelection(order.id)}
+          />
+          <div className="payment-info">
+            <h3 onClick={() => navigate(`/tour/detail/${order.slug}`)}>
+              {order.title}
+            </h3>
+            <p>Giá gốc: {(order.price ?? 0).toLocaleString()} VND</p>
+            <p>Giảm giá: {order.discount ?? 0}%</p>
+            <p>Số lượng: {order.quantity ?? 1}</p>
+            <p>Thành tiền: {(order.totalAmount ?? 0).toLocaleString()} VND</p>
+          </div>
+          <img src={order.images} alt={order.title} className="payment-image" />
+        </div>
+      ))}
+
+      {showVoucherList && (
+        <div className="voucher-container">
+          <h3>Danh sách Voucher</h3>
+          {vouchers.length > 0 ? (
+            vouchers.map((voucher) => (
+              <div key={voucher.id} className="voucher-item">
+                <img src={Ph} alt="Voucher" />
+                <p>
+                  <strong>Giảm {voucher.discount}%</strong>
+                </p>
+                <p>
+                  Hạn sử dụng:{" "}
+                  {dayjs(voucher.timeStart).format("DD/MM/YYYY HH:mm")}
+                </p>
+                <button onClick={() => applyVoucher(voucher)}>Dùng</button>
+              </div>
+            ))
+          ) : (
+            <p>Không có voucher nào khả dụng.</p>
           )}
         </div>
+      )}
 
-        {showVoucherList && (
-          <div className="voucher-list">
-            <h3>Danh sách Voucher</h3>
-            {vouchers.length > 0 ? (
-              vouchers.map((voucher) => (
-                <div key={voucher.id} className="voucher-item">
-                  <img src={Ph} alt="alt" />
-                  <p>
-                    <strong>Giảm {voucher.discount}%</strong>
-                  </p>
-                  <p>
-                    Hạn sử dụng:{" "}
-                    {dayjs(voucher.timeStart).format("DD/MM/YYYY HH:mm")}
-                  </p>
-                  <button onClick={() => applyVoucher(voucher)}>Dùng</button>
-                </div>
-              ))
-            ) : (
-              <p>Không có voucher nào khả dụng.</p>
-            )}
-          </div>
-        )}
+      <div className="payment-summary">
+        <p>Tổng cộng: {getTotalAmount().toLocaleString()} VND</p>
+        <p>Giảm giá voucher: {discount.toLocaleString()} VND</p>
+        <p>
+          Thành tiền (sau giảm giá):{" "}
+          {(getTotalAmount() - discount).toLocaleString()} VND
+        </p>
       </div>
 
-      <div className="cart-summary">
-        <p>Tổng đơn: {totalPrice.toLocaleString()} VNĐ</p>
-        {selectedVoucher && <p>Giảm giá: {discount.toLocaleString()} VNĐ</p>}
-        <p>Thành tiền: {finalAmount.toLocaleString()} VNĐ</p>
-      </div>
-      <div className="cart-actions">
+      <div className="payment-actions">
         <button
-          className="voucher-btn"
+          className="btn-voucher"
           onClick={() => setShowVoucherList(!showVoucherList)}
         >
           Sử dụng voucher
         </button>
-        <button className="checkout-btn" onClick={handleCheckout}>
+        <button
+          className="btn-checkout"
+          onClick={() => handleCheckout(selectedOrders, orderHistory)}
+        >
           Thanh toán
         </button>
       </div>
