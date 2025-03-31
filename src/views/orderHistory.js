@@ -79,11 +79,11 @@ const History = () => {
 
     try {
       const response = await fetch(
-        `http://192.168.55.2:3000/user/refundMoney/${order.id}`,
+        `http://192.168.55.2:3000/user/refundMoney`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(),
+          body: JSON.stringify({ orderItemId: order.id }),
         }
       );
       console.log(response);
