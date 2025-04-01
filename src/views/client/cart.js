@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import "../../styles/cart.scss";
 import { useNavigate } from "react-router-dom";
+import * as systemConfig from "../../config/system";
+import Cookies from "js-cookie";
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
@@ -10,17 +12,18 @@ const Cart = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
+  const token = Cookies.get("tokenUser");
   const role = localStorage.getItem("role");
   const navigate = useNavigate();
+  const [emailLog, setMail] = useState("");
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(savedCart);
   }, []);
-
   useEffect(() => {
     const fetchTours = async () => {
       try {
-        const response = await fetch("http://192.168.55.2:3000/tours");
+        const response = await fetch("http://localhost:3000/tours");
         if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
         const data = await response.json();
 
@@ -40,16 +43,6 @@ const Cart = () => {
     fetchTours();
   }, []);
 
-  const updateQuantity = (id, amount) => {
-    const updatedCart = cart.map((item) =>
-      item.id === id
-        ? { ...item, quantity: Math.max(1, item.quantity + amount) }
-        : item
-    );
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-  };
-
   const removeItem = (id) => {
     const updatedCart = cart.filter((item) => item.id !== id);
     setCart(updatedCart);
@@ -63,18 +56,47 @@ const Cart = () => {
       [id]: !prev[id],
     }));
   };
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000${systemConfig.prefixAdmin}/customers`
+        );
+
+        if (!response.ok) throw new Error("Lỗi khi lấy danh sách khách hàng");
+
+        const data = await response.json();
+        const User = Array.isArray(data.data) ? data.data : [];
+        const mailLogin = User.find((to) => to.token === token);
+        setMail(mailLogin ? mailLogin.email : "");
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchCustomers();
+  }, [token]);
 
   const handleCheckout = async () => {
     if (role !== "customer" && role !== "admin") {
       alert("Vui lòng đăng nhập trước khi đặt hàng");
       return;
     }
-
+    if (emailLog !== email) {
+      alert("Email không trùng với email tài khoản");
+      return;
+    }
     if (!fullName || !email || !phone) {
       alert("Vui lòng nhập đầy đủ thông tin cá nhân.");
       return;
     }
-
+    if (phone.length !== 10 || !phone.startsWith("0")) {
+      alert("Số điện thoại không hợp lệ");
+      return;
+    }
+    if (!isNaN(fullName)) {
+      alert("Họ và tên không hợp lệ");
+      return;
+    }
     const selectedCartItems = cart.filter((item) => selectedItems[item.id]);
     if (selectedCartItems.length === 0) {
       alert("Vui lòng chọn ít nhất một sản phẩm để đặt hàng.");
@@ -88,7 +110,7 @@ const Cart = () => {
     console.log(orderData);
 
     try {
-      const response = await fetch("http://192.168.55.2:3000/orders", {
+      const response = await fetch("http://localhost:3000/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -111,6 +133,45 @@ const Cart = () => {
       console.error("Lỗi khi gửi đơn hàng:", error);
       alert("Có lỗi xảy ra khi đặt hàng, vui lòng thử lại!");
     }
+  };
+  const handleChangeQuantity = (event, id) => {
+    let value = event.target.value;
+    value = value.replace(/\D/g, "");
+    let sl = value ? parseInt(value, 10) : 1;
+
+    const tour = tours.find((tour) => tour.id === id);
+    if (tour) {
+      if (sl > tour.stock) {
+        alert("Số lượng không thể lớn hơn số tồn");
+        sl = tour.stock;
+      }
+    }
+
+    const updatedCart = cart.map((item) =>
+      item.id === id ? { ...item, quantity: Math.max(1, sl) } : item
+    );
+
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+  const updateQuantity = (id, amount) => {
+    const updatedCart = cart.map((item) => {
+      if (item.id === id) {
+        const tour = tours.find((tour) => tour.id === id);
+        const newQuantity = item.quantity + amount;
+
+        if (tour && newQuantity > tour.stock) {
+          alert("Số lượng đã vượt quá số tồn");
+          return { ...item, quantity: tour.stock };
+        }
+
+        return { ...item, quantity: Math.max(1, newQuantity) };
+      }
+      return item;
+    });
+
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const totalAmount = cart.reduce((total, item) => {
@@ -142,13 +203,19 @@ const Cart = () => {
                 />
                 <div className="cart-info">
                   <p className="cart-name">{tour.title}</p>
+                  <p className="tour-stock">Số lượng: {tour.stock}</p>
                   <p className="cart-price">
                     {tour.price.toLocaleString()} VNĐ
                   </p>
                 </div>
                 <div className="cart-quantity">
                   <button onClick={() => updateQuantity(item.id, -1)}>-</button>
-                  <span className="quantity-value">{item.quantity}</span>
+                  <input
+                    type="text"
+                    className="quantity-value"
+                    onChange={(event) => handleChangeQuantity(event, item.id)}
+                    value={item.quantity}
+                  />
                   <button onClick={() => updateQuantity(item.id, 1)}>+</button>
                 </div>
                 <p className="cart-total">

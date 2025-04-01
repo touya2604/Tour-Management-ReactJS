@@ -28,7 +28,7 @@ const Payment = () => {
         }
 
         const response = await fetch(
-          "http://192.168.55.2:3000/user/tourBookingHistory",
+          "http://localhost:3000/user/tourBookingHistory",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -65,7 +65,7 @@ const Payment = () => {
     const fetchVouchers = async () => {
       try {
         const response = await fetch(
-          `http://192.168.55.2:3000${systemConfig.prefixAdmin}/vouchers`
+          `http://localhost:3000${systemConfig.prefixAdmin}/vouchers`
         );
         const result = await response.json();
         if (result.data && Array.isArray(result.data)) {
@@ -134,17 +134,14 @@ const Payment = () => {
         .filter((order) => selectedOrders.includes(order.id))
         .map((order) => order.id);
 
-      const response = await fetch(
-        "http://192.168.55.2:3000/user/paymentPost",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ orderItemsId: selectedTours }),
-        }
-      );
+      const response = await fetch("http://localhost:3000/user/paymentPost", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ orderItemsId: selectedTours }),
+      });
 
       const data = await response.json();
       if (response.ok && data.code === 200) {
@@ -188,34 +185,6 @@ const Payment = () => {
         </div>
       ))}
 
-      {showVoucherList && (
-        <div className="voucher-container">
-          <h3>Danh sách Voucher</h3>
-          {vouchers.length > 0 ? (
-            vouchers.map((voucher) => (
-              <div key={voucher.id} className="voucher-item">
-                <img src={Ph} alt="Voucher" />
-                <div className="voucher-info">
-                  <p>
-                    <strong>Giảm {voucher.discount}%</strong>
-                    <span className="voucher-expiry">
-                      Ngày hết hạn:{" "}
-                      {dayjs(voucher.timeEnd).format("DD/MM/YYYY")}
-                    </span>
-                  </p>
-                  <p>
-                    Số tiền tối thiểu: {voucher.minAmount.toLocaleString()} VND
-                  </p>
-                </div>
-                <button onClick={() => applyVoucher(voucher)}>Dùng</button>
-              </div>
-            ))
-          ) : (
-            <p>Không có voucher nào khả dụng.</p>
-          )}
-        </div>
-      )}
-
       <div className="payment-summary">
         <p>Tổng cộng: {getTotalAmount().toLocaleString()} VND</p>
         <p>Giảm giá voucher: {discount.toLocaleString()} VND</p>
@@ -224,16 +193,46 @@ const Payment = () => {
           {(getTotalAmount() - discount).toLocaleString()} VND
         </p>
       </div>
-      <div className="payment-actions">
-        <button
-          className="btn-voucher"
-          onClick={() => setShowVoucherList(!showVoucherList)}
-        >
-          Sử dụng voucher
-        </button>
-        <button className="btn-checkout" onClick={handleCheckout}>
-          Thanh toán
-        </button>
+      <div className="payVou-container">
+        <div className="payment-actions">
+          <button
+            className="btn-voucher"
+            onClick={() => setShowVoucherList(!showVoucherList)}
+          >
+            Sử dụng voucher
+          </button>
+          <button className="btn-checkout" onClick={handleCheckout}>
+            Thanh toán
+          </button>
+        </div>
+        {showVoucherList && (
+          <div className="voucher-container">
+            <h3>Danh sách Voucher</h3>
+            {vouchers.length > 0 ? (
+              vouchers.map((voucher) => (
+                <div key={voucher.id} className="voucher-item">
+                  <img src={Ph} alt="Voucher" />
+                  <div className="voucher-info">
+                    <p>
+                      <strong>Giảm {voucher.discount}%</strong>
+                      <span className="voucher-expiry">
+                        Ngày hết hạn:{" "}
+                        {dayjs(voucher.timeEnd).format("DD/MM/YYYY")}
+                      </span>
+                    </p>
+                    <p>
+                      Số tiền tối thiểu: {voucher.minAmount.toLocaleString()}{" "}
+                      VND
+                    </p>
+                  </div>
+                  <button onClick={() => applyVoucher(voucher)}>Dùng</button>
+                </div>
+              ))
+            ) : (
+              <p>Không có voucher nào khả dụng.</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

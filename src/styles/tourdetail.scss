@@ -1,93 +1,105 @@
 .tour-detail {
   max-width: 1366px;
   max-height: 638px;
+  height: auto;
   width: 100%;
   margin: auto;
   padding: 20px;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  
-    .tour-header {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      
-      .tour-image {
-        width: 50%;
-        border-radius: 10px;
-        object-fit: cover;
-      }
-  
-      .tour-info {
-        flex: 1;
-  
-        .tour-title {
-          font-size: 28px;
-          font-weight: bold;
-        }
-  
-        .tour-price {
-          font-size: 24px;
-          color: #008000;
-          font-weight: bold;
-          margin: 10px 0;
-        }
-  
-        .add-to-cart {
-          background-color: #008000;
-          color: white;
-          padding: 10px 15px;
-          border: none;
-          cursor: pointer;
-          border-radius: 5px;
-          font-size: 16px;
-          transition: 0.3s;
-  
-          &:hover {
-            background-color: #006400;
-          }
-        }
+  display: grid;
+  grid-template-rows: repeat(1, auto);
+  grid-template-columns: repeat(2, 50%);
+  align-items: center;
+  column-gap: 3rem;
+
+  .tour-header {
+    width: 100%;
+    // height: max-content;
+    grid-row: 1;
+    .tour-image {
+      width: 100%;
+      // height: auto;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+  }
+  .tour-info {
+    // grid-column: 2;
+    // flex: 1;
+
+    .tour-title {
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .tour-stock {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .tour-price {
+      font-size: 24px;
+      color: #008000;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .add-to-cart {
+      background-color: #008000;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: 0.3s;
+
+      &:hover {
+        background-color: #006400;
       }
     }
-  
+    .cart-quantity {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 10px;
+
+      button {
+        width: 25px;
+        height: 25px;
+        border: none;
+        background: #e63946;
+        color: #fff;
+        font-size: 18px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: 0.2s;
+
+        &:hover {
+          background: #d62839;
+        }
+      }
+
+      .quantity-value {
+        max-width: 100px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+    }
     .tour-description {
+      grid-row: 2;
       margin-top: 20px;
-  
+
       h2 {
         font-size: 22px;
         font-weight: bold;
       }
-  
+
       p {
         font-size: 16px;
         line-height: 1.5;
       }
     }
-  
-    .tour-reviews {
-      margin-top: 20px;
-  
-      h2 {
-        font-size: 22px;
-        font-weight: bold;
-      }
-  
-      .review-card {
-        background: #f9f9f9;
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 5px;
-  
-        .review-text {
-          font-size: 16px;
-        }
-  
-        .review-user {
-          font-size: 14px;
-          color: gray;
-        }
-      }
-    }
   }
-  
+}

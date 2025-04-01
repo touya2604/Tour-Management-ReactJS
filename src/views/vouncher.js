@@ -13,7 +13,7 @@ const Vouncher = () => {
     const fetchVounchers = async () => {
       try {
         const response = await fetch(
-          `http://192.168.55.2:3000${systemConfig.prefixAdmin}/vouchers`
+          `http://localhost:3000${systemConfig.prefixAdmin}/vouchers`
         );
         const data = await response.json();
         setVouncherList(Array.isArray(data.data) ? data.data : []);

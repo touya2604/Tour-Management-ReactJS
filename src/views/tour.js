@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/tour.scss";
+import * as systemConfig from "../config/system";
 import { Pagination } from "react-bootstrap";
 const TourList = () => {
   const itemsPerPage = 6;
   const [tours, setTours] = useState([]);
+  const [cates, setCate] = useState([]);
+
   const [filteredTours, setFilteredTours] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -17,7 +20,7 @@ const TourList = () => {
   useEffect(() => {
     const fetchTours = async () => {
       try {
-        const response = await fetch(`http://192.168.55.2:3000/tours`);
+        const response = await fetch(`http://localhost:3000/tours`);
 
         if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
 
@@ -34,6 +37,7 @@ const TourList = () => {
               }))
             : []
         );
+
         setFilteredTours(Array.isArray(data.data) ? data.data : []);
       } catch (error) {
         console.error(error);
@@ -44,7 +48,7 @@ const TourList = () => {
 
     fetchTours();
   }, []);
-  console.log(tours);
+
   useEffect(() => {
     let filtered = tours.filter((tour) =>
       tour?.title?.toLowerCase().includes(search.toLowerCase())
@@ -77,8 +81,8 @@ const TourList = () => {
           onChange={(e) => setSearch(e.target.value)}
         />
         <div className="filter-options">
-          <button onClick={() => setSortType("asc")}>Price ascending</button>
-          <button onClick={() => setSortType("desc")}>Price descending</button>
+          <button onClick={() => setSortType("asc")}>Giá tăng dần</button>
+          <button onClick={() => setSortType("desc")}>Giá giảm dần</button>
         </div>
         <div className="price-filter">
           <input
@@ -91,6 +95,7 @@ const TourList = () => {
               setPriceRange([Number(e.target.value), priceRange[1]])
             }
           />
+          <p>Từ {priceRange[0].toLocaleString()} VNĐ </p>
           <input
             type="range"
             min="0"
@@ -101,10 +106,7 @@ const TourList = () => {
               setPriceRange([priceRange[0], Number(e.target.value)])
             }
           />
-          <p>
-            {priceRange[0].toLocaleString()} VNĐ -{" "}
-            {priceRange[1].toLocaleString()} VNĐ
-          </p>
+          <p>{priceRange[1].toLocaleString()} VNĐ</p>
         </div>
       </div>
       <div className="tour-grid">
@@ -127,8 +129,9 @@ const TourList = () => {
                 <div className="tour-info">
                   <h3 className="tour-title">{tour.title}</h3>
                   <p className="tour-price">
-                    {tour.price.toLocaleString()} VNĐ - {tour.stock} người
+                    Giá: {tour.price.toLocaleString()} VNĐ
                   </p>
+                  <p className="tour-price">Số lượng: {tour.stock} người</p>
                   <button
                     className="detail-btn"
                     onClick={(e) => {

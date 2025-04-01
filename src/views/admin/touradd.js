@@ -30,7 +30,7 @@ const TourAdd = () => {
     const fetchCategories = async () => {
       try {
         const response = await fetch(
-          `http://192.168.55.2:3000${systemConfig.prefixAdmin}/categories`
+          `http://localhost:3000${systemConfig.prefixAdmin}/categories`
         );
 
         if (!response.ok) throw new Error("Lỗi khi lấy danh sách danh mục");
@@ -107,7 +107,7 @@ const TourAdd = () => {
     };
 
     try {
-      const response = await fetch("http://192.168.55.2:3000/tours", {
+      const response = await fetch("http://localhost:3000/tours", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTour),

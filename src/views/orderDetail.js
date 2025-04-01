@@ -13,7 +13,7 @@ const OrderDetail = () => {
       try {
         const token = Cookies.get("tokenUser");
         const response = await fetch(
-          "http://192.168.55.2:3000/user/paymentSuccess",
+          "http://localhost:3000/user/paymentSuccess",
           {
             method: "GET",
             headers: {

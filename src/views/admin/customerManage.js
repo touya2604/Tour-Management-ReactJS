@@ -12,16 +12,16 @@ const UserManage = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    const fetchTours = async () => {
+    const fetchCustomers = async () => {
       try {
         const response = await fetch(
-          `http://192.168.55.2:3000${systemConfig.prefixAdmin}/customers`
+          `http://localhost:3000${systemConfig.prefixAdmin}/customers`
         );
 
-        if (!response.ok) throw new Error("Lỗi khi lấy danh sách tour");
+        if (!response.ok) throw new Error("Lỗi khi lấy danh sách khách hàng");
 
         const data = await response.json();
-        console.log("API response:", data);
+        // console.log("API response:", data);
 
         // setTours(Array.isArray(data) ? data : []);
         // setFilteredTours(Array.isArray(data) ? data : []);
@@ -32,7 +32,7 @@ const UserManage = () => {
       }
     };
 
-    fetchTours();
+    fetchCustomers();
   }, []);
   const filteredUsers = users.filter(
     (user) => user.email.includes(search) || user.phone.includes(search)

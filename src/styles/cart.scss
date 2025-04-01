@@ -52,6 +52,11 @@
           color: #e63946;
           font-weight: bold;
         }
+        .tour-stock {
+          font-size: 18px;
+          font-weight: normal;
+          margin-bottom: 5px;
+        }
       }
 
       .cart-quantity {
@@ -76,6 +81,7 @@
         }
 
         .quantity-value {
+          width: 30px;
           font-size: 16px;
           font-weight: bold;
         }

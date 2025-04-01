@@ -47,7 +47,7 @@ const CategoryAdd = () => {
     };
     try {
       const response = await fetch(
-        `http://192.168.55.2:3000${systemConfig.prefixAdmin}/categories`,
+        `http://localhost:3000${systemConfig.prefixAdmin}/categories`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

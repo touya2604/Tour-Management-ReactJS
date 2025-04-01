@@ -20,7 +20,7 @@ const History = () => {
         }
 
         const response = await fetch(
-          "http://192.168.55.2:3000/user/tourBookingHistory",
+          "http://localhost:3000/user/tourBookingHistory",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -59,7 +59,7 @@ const History = () => {
 
   const handleCancel = (orderId, orderItemId) => async () => {
     try {
-      const response = await fetch(`http://192.168.55.2:3000/user/cancelTour`, {
+      const response = await fetch(`http://localhost:3000/user/cancelTour`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId, orderItemId }),
@@ -78,14 +78,11 @@ const History = () => {
     if (!order.paymentDate || !order.totalAmount) return;
 
     try {
-      const response = await fetch(
-        `http://192.168.55.2:3000/user/refundMoney`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orderItemId: order.id }),
-        }
-      );
+      const response = await fetch(`http://localhost:3000/user/refundMoney`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderItemId: order.id }),
+      });
       console.log(response);
       if (!response.ok) throw new Error("Lỗi");
       alert(`Trả tiền thành công! (ID: ${order.id})`);

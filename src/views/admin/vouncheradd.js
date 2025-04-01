@@ -41,7 +41,7 @@ const VouncherAdd = () => {
 
     try {
       const response = await fetch(
-        `http://192.168.55.2:3000${systemConfig.prefixAdmin}/vouchers`,
+        `http://localhost:3000${systemConfig.prefixAdmin}/vouchers`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

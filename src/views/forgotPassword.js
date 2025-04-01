@@ -14,7 +14,7 @@ const ForgotPassword = () => {
     setMessage("");
 
     try {
-      const response = await fetch("http://192.168.55.2:3000/", {
+      const response = await fetch("http://localhost:3000/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -37,7 +37,7 @@ const ForgotPassword = () => {
     setMessage("");
 
     try {
-      const response = await fetch("http://192.168.55.2:3000/", {
+      const response = await fetch("http://localhost:3000/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
