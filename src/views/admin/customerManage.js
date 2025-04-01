@@ -4,12 +4,13 @@ import { FaSearch, FaUserCircle } from "react-icons/fa";
 import "../../styles/UserManage.scss";
 import * as systemConfig from "../../config/system";
 
-const itemsPerPage = 3;
+const itemsPerPage = 6;
 
 const UserManage = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [roleFilter, setRoleFilter] = useState("all");
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -21,22 +22,21 @@ const UserManage = () => {
         if (!response.ok) throw new Error("Lỗi khi lấy danh sách khách hàng");
 
         const data = await response.json();
-        // console.log("API response:", data);
-
-        // setTours(Array.isArray(data) ? data : []);
-        // setFilteredTours(Array.isArray(data) ? data : []);
         setUsers(Array.isArray(data.data) ? data.data : []);
       } catch (error) {
         console.error(error);
-      } finally {
       }
     };
 
     fetchCustomers();
   }, []);
-  const filteredUsers = users.filter(
-    (user) => user.email.includes(search) || user.phone.includes(search)
-  );
+
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      user.email.includes(search) || user.phone.includes(search);
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    return matchesSearch && matchesRole;
+  });
 
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const paginatedUsers = filteredUsers.slice(
@@ -45,7 +45,7 @@ const UserManage = () => {
   );
 
   const handleDelete = (id, status) => {
-    if (status === "Tốt") {
+    if (status === "active") {
       alert("Không thể xóa người dùng có trạng thái Tốt!");
       return;
     }
@@ -54,14 +54,22 @@ const UserManage = () => {
 
   return (
     <div className="user-manage">
-      <div className="search-box">
+      <div className="filter-box">
         <input
           type="text"
           placeholder="Nhập email/sđt"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <FaSearch className="search-icon" />
+        <select
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+        >
+          <option value="all">Tất cả</option>
+          <option value="admin">Admin</option>
+          <option value="customer">Khách hàng</option>
+        </select>
+        {/* <FaSearch className="search-icon" /> */}
       </div>
 
       <div className="user-list">
@@ -76,7 +84,10 @@ const UserManage = () => {
                 <strong>Email:</strong> {user.email}
               </p>
               <p>
-                <strong>SDT:</strong> {user.phone}
+                <strong>Số điện thoại:</strong> {user.phone}
+              </p>
+              <p>
+                <strong>Vai trò:</strong> {user.role}
               </p>
               <p>
                 <strong>Trạng thái:</strong> {user.status}
@@ -93,7 +104,7 @@ const UserManage = () => {
         ))}
       </div>
 
-      <Pagination className="pagination">
+      <Pagination className="pagination-custom">
         <Pagination.Prev
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}

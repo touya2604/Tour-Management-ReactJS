@@ -35,11 +35,13 @@ const Header = ({ checkLog }) => {
           <button onClick={() => navigate("/categories")}>Danh mục</button>
         )}
 
-        {/* {role === "admin" && (
-          <button onClick={() => navigate("/revenue")}>
+        {role === "admin" && (
+          <button
+            onClick={() => navigate(`${systemConfig.prefixAdmin}/revenue`)}
+          >
             Quản lý doanh thu
           </button>
-        )} */}
+        )}
 
         {role === "admin" ? (
           <button
@@ -51,7 +53,13 @@ const Header = ({ checkLog }) => {
           <button onClick={() => navigate("/vouncher")}>Mã giảm giá</button>
         )}
 
-        {role === "admin" && <button>Quản lý đơn hàng</button>}
+        {role === "admin" && (
+          <button
+            onClick={() => navigate(`${systemConfig.prefixAdmin}/ordersManage`)}
+          >
+            Quản lý đơn hàng
+          </button>
+        )}
 
         {role === "admin" && (
           <button

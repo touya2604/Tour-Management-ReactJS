@@ -19,7 +19,7 @@ import VouncherAdd from "./admin/vouncheradd";
 import VouncherUpdate from "./admin/vouncherupdate";
 import * as systemConfig from "../config/system";
 import UserManage from "./admin/customerManage";
-import CategoryList from "./CategoryList";
+import CategoryList from "../views/admin/CategoryList.js";
 import TourDanhMuc from "./tourDanhMuc";
 import CategoryAdd from "./admin/cateAdd";
 import CategoryUpdate from "./admin/cateUpdate";
@@ -28,6 +28,8 @@ import Payment from "./client/payment.js";
 import CategoryListCustomer from "./client/categories.js";
 import History from "./orderHistory.js";
 import ForgotPassword from "./forgotPassword.js";
+import OrderManage from "./admin/ordersManage.js";
+import RevenueDashboard from "./admin/revenue.js";
 const App = () => {
   const [role] = useState(localStorage.getItem("role") || "");
   return (
@@ -89,6 +91,14 @@ const App = () => {
         <Route
           path={`${systemConfig.prefixAdmin}/cates-upd/:slug`}
           element={<CategoryUpdate />}
+        />
+        <Route
+          path={`${systemConfig.prefixAdmin}/ordersManage`}
+          element={<OrderManage />}
+        />
+        <Route
+          path={`${systemConfig.prefixAdmin}/revenue`}
+          element={<RevenueDashboard />}
         />
       </Routes>
     </Router>

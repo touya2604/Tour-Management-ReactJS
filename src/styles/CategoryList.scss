@@ -3,10 +3,20 @@
   margin: auto;
   padding: 20px;
 
-  h2 {
-    color: green;
-    font-weight: bold;
-    margin-bottom: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+
+  .title-add {
+    display: flex;
+    justify-content: space-between;
+    h2 {
+      color: #ffb433;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .button-add {
+      width: 100px;
+    }
   }
 
   .grid-container {
@@ -34,24 +44,60 @@
       margin: 10px 0;
       font-size: 18px;
     }
-
-    button {
-      background-color: #007bff;
+    .buttonUse {
       border: none;
       padding: 8px 12px;
       cursor: pointer;
       border-radius: 5px;
       color: white;
-
-      &:hover {
-        background-color: #0056b3;
-      }
+      margin: 0px 5px;
+      // &:hover {
+      //   background-color: #0056b3;
+      // }
     }
   }
 
-  .pagination {
+  .pagination-custom {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin-top: 2em;
+    .visually-hidden {
+      display: none !important;
+    }
+    .page-item {
+      list-style: none;
+
+      &.disabled .page-link {
+        color: #b3b3b3;
+        cursor: not-allowed;
+      }
+
+      &.active .page-link {
+        background-color: black;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 5px 12px;
+      }
+    }
+    .page-link {
+      text-decoration: none;
+      color: black;
+      font-size: 1em;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 8px;
+      transition: 0.3s;
+      border: none;
+      background: transparent;
+
+      &:hover {
+        background-color: #e0e0e0;
+      }
+    }
   }
 }

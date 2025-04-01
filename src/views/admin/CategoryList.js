@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Button, Pagination } from "react-bootstrap";
-import "../styles/CategoryList.scss";
-import * as systemConfig from "../config/system";
+import { Pagination } from "react-bootstrap";
+import "../../styles/CategoryList.scss";
+import * as systemConfig from "../../config/system";
 import { useNavigate } from "react-router-dom";
 
-const itemsPerPage = 5;
+const itemsPerPage = 4;
 
 const CategoryList = () => {
   const [cates, setCate] = useState([]);
@@ -37,26 +37,29 @@ const CategoryList = () => {
 
   return (
     <div className="category-list">
-      <h2>Danh sách danh mục</h2>
-      <Button
-        variant="success"
-        onClick={() => navigate(`${systemConfig.prefixAdmin}/cates-add`)}
-      >
-        Tạo
-      </Button>
+      <div className="title-add">
+        <h2>Danh sách danh mục</h2>
+        <button
+          className="btn btn-success buttonUse"
+          id="button-add"
+          onClick={() => navigate(`${systemConfig.prefixAdmin}/cates-add`)}
+        >
+          Tạo tour mới
+        </button>
+      </div>
       <div className="grid-container">
         {displayedCategories.map((category) => (
           <div key={category.id} className="category-card">
             <img src={category.image} alt={category.title} />
             <h3>{category.title}</h3>
-            <Button
-              variant="primary"
+            <button
+              className="btn btn-primary buttonUse"
               onClick={() => navigate(`/tourDanhMuc/${category.title}`)}
             >
               Xem chi tiết
-            </Button>
-            <Button
-              variant="warning"
+            </button>
+            <button
+              class="btn btn-warning buttonUse"
               onClick={() =>
                 navigate(
                   `${systemConfig.prefixAdmin}/cates-upd/${category.slug}`
@@ -64,13 +67,13 @@ const CategoryList = () => {
               }
             >
               Cập nhật
-            </Button>
-            <Button variant="danger">Xóa</Button>
+            </button>
+            <button className="btn btn-danger buttonUse">Xóa</button>
           </div>
         ))}
       </div>
 
-      <Pagination className="pagination">
+      <Pagination className="pagination-custom">
         <Pagination.Prev
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}
