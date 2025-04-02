@@ -16,57 +16,15 @@ const OrderManage = () => {
         const response = await fetch(
           `http://localhost:3000${systemConfig.prefixAdmin}/orders`
         );
-        if (!response.ok) throw new Error("Lỗi khi lấy danh sách đơn hàng");
-        const data = await response.json();
+        const result = await response.json();
 
-        setOrders(
-          data.map((order) => ({
-            ...order,
-            orderItems: order.orderItems.map((item) => ({
-              ...item,
-              images: JSON.parse(item.images)[0],
-            })),
-          }))
-        );
+        if (response.ok && result.code === 200) {
+          setOrders(result.data);
+        } else {
+          console.error("Lỗi khi lấy danh sách đơn hàng", result.message);
+        }
       } catch (error) {
-        console.error(error);
-
-        setOrders([
-          {
-            orderId: "ORD001",
-            voucherDiscount: 10,
-            orderStatus: "completed",
-            orderItems: [
-              {
-                tourId: "TOUR123",
-                quantity: 1,
-                price: 1500000,
-                discount: 5,
-                timeStart: "2024-03-15T08:30:00",
-                paymentDate: "2024-03-10T10:00:00",
-                status: "completed",
-                images: "https://via.placeholder.com/100",
-              },
-            ],
-          },
-          {
-            orderId: "ORD002",
-            voucherDiscount: 15,
-            orderStatus: "pending",
-            orderItems: [
-              {
-                tourId: "TOUR124",
-                quantity: 3,
-                price: 2200000,
-                discount: 10,
-                timeStart: "2024-04-01T09:00:00",
-                paymentDate: null,
-                status: "pending",
-                images: "https://via.placeholder.com/100",
-              },
-            ],
-          },
-        ]);
+        console.error("Lỗi kết nối API", error);
       }
     };
 
@@ -79,48 +37,68 @@ const OrderManage = () => {
     currentPage * itemsPerPage
   );
 
+  const calculateOrderTotal = (order) => {
+    let subtotal = order.orderItems.reduce((total, item) => {
+      return total + item.quantity * item.price * (1 - item.discount / 100);
+    }, 0);
+    return subtotal * (1 - parseFloat(order.voucherDiscount) / 100);
+  };
+
   return (
     <div className="order-manage">
       <h2 className="text-center">Quản lý đơn hàng</h2>
       <div className="order-list">
-        {paginatedOrders.map((orderGroup) => (
-          <div key={orderGroup.orderId} className="order-group">
-            <h3>Mã đơn hàng: {orderGroup.orderId}</h3>
+        {paginatedOrders.map((order) => (
+          <div key={order.orderId} className="order-group">
+            <h3>Mã đơn hàng: {order.orderId}</h3>
             <p>
-              <strong>Trạng thái đơn hàng:</strong> {orderGroup.orderStatus}
+              <strong>Trạng thái đơn hàng:</strong> {order.orderStatus}
             </p>
             <p>
-              <strong>Giảm giá voucher:</strong> {orderGroup.voucherDiscount}%
+              <strong>Giảm giá voucher:</strong> {order.voucherDiscount}%
             </p>
-            {orderGroup.orderItems.map((order, index) => (
-              <div key={index} className="order-card">
+            <p className="total-price">
+              <strong>Tổng tiền đơn hàng:</strong>{" "}
+              {calculateOrderTotal(order).toLocaleString()} VND
+            </p>
+            {order.orderItems.map((item) => (
+              <div key={item.id} className="order-card">
                 <img
-                  src={order.images}
-                  alt={`Tour ${order.tourId}`}
+                  src={item.images}
+                  alt={`Tour ${item.tourId}`}
                   className="order-image-small"
                 />
                 <div className="order-info">
                   <p>
-                    <strong>Số lượng:</strong> {order.quantity}
+                    <strong>Số lượng:</strong> {item.quantity}
                   </p>
                   <p>
-                    <strong>Giá gốc:</strong> {order.price.toLocaleString()} VND
+                    <strong>Giá gốc:</strong> {item.price.toLocaleString()} VND
                   </p>
                   <p>
-                    <strong>Giảm giá:</strong> {order.discount}%
+                    <strong>Giảm giá:</strong> {item.discount}%
                   </p>
                   <p>
                     <strong>Thời gian đặt:</strong>{" "}
-                    {dayjs(order.timeStart).format("DD/MM/YYYY HH:mm")}
+                    {dayjs(item.timeStart).format("DD/MM/YYYY HH:mm")}
                   </p>
                   <p>
                     <strong>Thanh toán:</strong>{" "}
-                    {order.paymentDate
-                      ? dayjs(order.paymentDate).format("DD/MM/YYYY HH:mm")
+                    {item.paymentDate
+                      ? dayjs(item.paymentDate).format("DD/MM/YYYY HH:mm")
                       : "Chưa thanh toán"}
                   </p>
                   <p>
-                    <strong>Trạng thái:</strong> {order.status}
+                    <strong>Trạng thái:</strong> {item.status}
+                  </p>
+                  <p>
+                    <strong>Tổng tiền:</strong>{" "}
+                    {(
+                      item.quantity *
+                      item.price *
+                      (1 - item.discount / 100)
+                    ).toLocaleString()}{" "}
+                    VND
                   </p>
                 </div>
               </div>
