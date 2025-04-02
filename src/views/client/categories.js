@@ -50,7 +50,7 @@ const CategoryListCustomer = () => {
         ))}
       </div>
 
-      <Pagination className="pagination">
+      <Pagination className="pagination-custom">
         <Pagination.Prev
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}

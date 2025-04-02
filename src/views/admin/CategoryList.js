@@ -28,6 +28,33 @@ const CategoryList = () => {
       console.error(error);
     }
   };
+  const deleteCategory = (slug) => async () => {
+    const check = window.confirm("Có chắc rằng muốn xóa đi Danh mục này không");
+    if (!check) {
+      return;
+    }
+    const deletedCate = cates.find((item) => item.slug === slug);
+    try {
+      const response = await fetch(
+        `http://localhost:3000${systemConfig.prefixAdmin}/categories/${slug}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...deletedCate, status: "disable" }),
+        }
+      );
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Lỗi khi xóa danh mục: ${errorText}`);
+      }
+      alert("Xóa thành công");
+      let updateCates = cates.filter((item) => item.slug !== slug);
+      setCate(updateCates);
+    } catch (error) {
+      console.error("Lỗi khi xóa Danh mục:", error);
+      alert("Có lỗi xảy ra khi xóa Danh mục");
+    }
+  };
 
   const totalPages = Math.ceil(cates.length / itemsPerPage);
   const displayedCategories = cates.slice(
@@ -68,7 +95,12 @@ const CategoryList = () => {
             >
               Cập nhật
             </button>
-            <button className="btn btn-danger buttonUse">Xóa</button>
+            <button
+              className="btn btn-danger buttonUse"
+              onClick={deleteCategory(category.slug)}
+            >
+              Xóa
+            </button>
           </div>
         ))}
       </div>

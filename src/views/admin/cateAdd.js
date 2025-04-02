@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/cateAdd.scss";
 import { useNavigate } from "react-router-dom";
@@ -16,9 +16,34 @@ const CategoryAdd = () => {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
+  const [cateTitle, setCateTitle] = useState([]);
   const [image, setImage] = useState(null);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000${systemConfig.prefixAdmin}/categories`
+        );
 
+        if (!response.ok) throw new Error("Lỗi khi lấy danh sách danh mục");
+
+        const data = await response.json();
+        console.log("API response:", data);
+
+        const categoryTitles = Array.isArray(data.data)
+          ? data.data.map((category) => category.slug)
+          : [];
+        // console.log(categoryTitles);
+        setCateTitle(categoryTitles);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
   const handleInputChange = (e) => {
     setCategory({ ...category, [e.target.name]: e.target.value });
   };
@@ -36,6 +61,8 @@ const CategoryAdd = () => {
   };
 
   const handleSubmit = async () => {
+    setError("");
+
     const newCategory = {
       ...category,
       slug: category.title
@@ -45,6 +72,15 @@ const CategoryAdd = () => {
         .replace(/\s+/g, "-")
         .replace(/[^a-z0-9-]/g, ""),
     };
+    if (!category.title.trim()) {
+      setError("Vui lòng nhập tiêu đề");
+      return;
+    }
+    // console.log(category.slug);
+    if (cateTitle.includes(category.slug)) {
+      setError("Đã tồn tại danh mục này");
+      return;
+    }
     try {
       const response = await fetch(
         `http://localhost:3000${systemConfig.prefixAdmin}/categories`,
@@ -71,7 +107,7 @@ const CategoryAdd = () => {
         updatedAt: new Date().toISOString(),
       });
       alert("Tạo danh mục thành công!");
-      navigate("/");
+      navigate(`${systemConfig.prefixAdmin}/categories`);
     } catch (err) {
       console.error("Lỗi khi thêm danh mục:", err);
       alert(err.message || "Có lỗi xảy ra khi thêm danh mục!");
@@ -82,6 +118,11 @@ const CategoryAdd = () => {
     <div className="container mt-4 p-5 rounded custom-container">
       <div className="container p-4 rounded shadow-lg custom-boder">
         <h1 className="text-center custom-text">Tạo danh mục mới</h1>
+        {error && (
+          <p style={{ color: "red", textAlign: "center", fontSize: "larger" }}>
+            {error}
+          </p>
+        )}
         <div className="row">
           <div className="col-md-6">
             <form>
@@ -161,12 +202,12 @@ const CategoryAdd = () => {
           <button className="btn custom-color" onClick={handleSubmit}>
             Tạo danh mục
           </button>
-          <button
+          {/* <button
             className="btn btn-secondary ms-2"
             onClick={() => navigate("/")}
           >
             Hủy
-          </button>
+          </button> */}
         </div>
       </div>
     </div>
