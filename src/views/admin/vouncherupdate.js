@@ -24,7 +24,9 @@ const VoucherUpdate = () => {
         const statuses = [
           ...new Set(
             data.data
-              .filter((item) => item.status !== "Deleted")
+              .filter(
+                (item) => item.status !== "Deleted" && item.status !== "Expired"
+              )
               .map((item) => item.status)
           ),
         ];

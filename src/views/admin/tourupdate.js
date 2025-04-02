@@ -262,12 +262,12 @@ const TourUpdate = () => {
                     onChange={(e) =>
                       setTour((prev) => ({
                         ...prev,
-                        status: e.target.checked ? "active" : "disable",
+                        status: e.target.checked ? "active" : "inactive",
                       }))
                     }
                   />
                   <label className="form-check-label" htmlFor="statusCheckbox">
-                    {tour.status === "active" ? "Active" : "Disable"}
+                    {tour.status === "active" ? "Active" : "Inactive"}
                   </label>
                 </div>
               </div>

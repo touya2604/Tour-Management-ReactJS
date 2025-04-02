@@ -1,57 +1,40 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/sign.scss";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
-  const [message, setMessage] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [step, setStep] = useState(1);
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
-
-  const handleSendOtp = async (e) => {
-    e.preventDefault();
-    setMessage("");
-
-    try {
-      const response = await fetch("http://localhost:3000/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        setMessage("OTP đã gửi, vui lòng kiểm tra email.");
-        setStep(2);
-      } else {
-        setMessage(data.message);
-      }
-    } catch (error) {
-      setMessage("Lỗi khi gửi yêu cầu!");
-    }
+  const sendOtp = async () => {
+    const res = await fetch("http://localhost:3000/auth/forgot-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    if (res.ok) setStep(2);
   };
 
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setMessage("");
+  const verifyOtp = async () => {
+    const res = await fetch("http://localhost:3000/auth/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    });
+    if (res.ok) setStep(3);
+  };
 
-    try {
-      const response = await fetch("http://localhost:3000/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        alert("Xác nhận OTP thành công! Chuyển đến trang đặt lại mật khẩu.");
-        navigate("/reset-password");
-      } else {
-        setMessage(data.message);
-      }
-    } catch (error) {
-      setMessage("Lỗi khi xác thực OTP!");
+  const resetPassword = async () => {
+    const res = await fetch("http://localhost:3000/auth/reset-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, newPassword }),
+    });
+    if (res.ok) {
+      setMessage("Mật khẩu đã được cập nhật!");
+      setStep(1);
     }
   };
 
@@ -60,8 +43,8 @@ const ForgotPassword = () => {
       <h1>Quên mật khẩu</h1>
       {message && <p style={{ color: "green" }}>{message}</p>}
 
-      {step === 1 ? (
-        <form onSubmit={handleSendOtp}>
+      {step === 1 && (
+        <>
           <p>Nhập email của bạn để nhận mã OTP.</p>
           <input
             type="email"
@@ -70,10 +53,12 @@ const ForgotPassword = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <button type="submit">Gửi OTP</button>
-        </form>
-      ) : (
-        <form onSubmit={handleVerifyOtp}>
+          <button onClick={sendOtp}>Gửi OTP</button>
+        </>
+      )}
+
+      {step === 2 && (
+        <>
           <p>Nhập mã OTP được gửi đến email.</p>
           <input
             type="text"
@@ -82,8 +67,22 @@ const ForgotPassword = () => {
             onChange={(e) => setOtp(e.target.value)}
             required
           />
-          <button type="submit">Xác nhận</button>
-        </form>
+          <button onClick={verifyOtp}>Xác nhận</button>
+        </>
+      )}
+
+      {step === 3 && (
+        <>
+          <p>Đặt lại mật khẩu.</p>
+          <input
+            type="password"
+            placeholder="Mật khẩu mới"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+          />
+          <button onClick={resetPassword}>Xác nhận</button>
+        </>
       )}
 
       <p className="back-to-login" onClick={() => navigate("/login")}>
