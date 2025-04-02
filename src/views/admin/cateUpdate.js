@@ -136,12 +136,12 @@ const CategoryUpdate = () => {
                     onChange={(e) =>
                       setCategory((prev) => ({
                         ...prev,
-                        status: e.target.checked ? "active" : "disable",
+                        status: e.target.checked ? "active" : "inactive",
                       }))
                     }
                   />
                   <label className="form-check-label" htmlFor="statusCheckbox">
-                    {category.status === "active" ? "Active" : "Disable"}
+                    {category.status === "active" ? "Active" : "Inactive"}
                   </label>
                 </div>
               </div>
