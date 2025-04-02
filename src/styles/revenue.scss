@@ -12,14 +12,19 @@
     margin-bottom: 20px;
   }
 
-  .month-selector {
-    padding: 8px 12px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    background-color: #fff;
+  .filter-container {
+    display: flex;
+    gap: 10px;
     margin-bottom: 20px;
-    cursor: pointer;
+
+    select {
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      cursor: pointer;
+    }
   }
 
   .card {
@@ -35,7 +40,7 @@
       margin-bottom: 20px;
 
       .highlight {
-        color: #ff6347; /* Highlight color */
+        color: #ff6347;
         font-size: 26px;
       }
     }
@@ -44,6 +49,7 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
+      flex-wrap: wrap;
 
       @media (max-width: 768px) {
         flex-direction: column;
@@ -54,10 +60,6 @@
         border-radius: 8px;
         background-color: #f9f9f9;
         padding: 10px;
-      }
-
-      .recharts-bar-chart {
-        width: 100%;
       }
     }
   }
@@ -72,12 +74,12 @@
     padding: 15px;
   }
 
-  .chart-container {
+  .filter-container {
     flex-direction: column;
     align-items: center;
-  }
 
-  .month-selector {
-    margin-bottom: 10px;
+    select {
+      width: 100%;
+    }
   }
 }

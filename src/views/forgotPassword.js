@@ -14,7 +14,9 @@ const ForgotPassword = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
-    if (res.ok) setStep(2);
+    if (res.ok) {
+      setStep(2);
+    }
   };
 
   const verifyOtp = async () => {
