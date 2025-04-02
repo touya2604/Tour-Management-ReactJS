@@ -41,10 +41,40 @@ const TourManage = () => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
     setCurrentPage(pageNumber);
   };
-  const deleteItem = (id) => {
-    // const check = window.confirm("Có chắc rằng muốn xóa đi Tour này không");
-    const updateTour = tours.filter((item) => item.id !== id);
-    setTours(updateTour);
+  const deleteItem = (slug) => async () => {
+    const check = window.confirm("Có chắc rằng muốn xóa đi Tour này không");
+    if (!check) {
+      return;
+    }
+    const deletedTour = tours.find((item) => item.slug === slug);
+    const sanitizedTour = {
+      ...deletedTour,
+      images: Array.isArray(deletedTour.images)
+        ? deletedTour.images.join(", ")
+        : typeof deletedTour.images === "object"
+        ? JSON.stringify(deletedTour.images)
+        : deletedTour.images,
+    };
+    try {
+      const response = await fetch(
+        `http://localhost:3000${systemConfig.prefixAdmin}/tours/${slug}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...sanitizedTour, status: "Deleted" }),
+        }
+      );
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Lỗi khi cập nhật voucher: ${errorText}`);
+      }
+      alert("Xóa thành công");
+      let updateTour = tours.filter((item) => item.slug !== slug);
+      setTours(updateTour);
+    } catch (error) {
+      console.error("Lỗi khi xóa Tour:", error);
+      alert("Có lỗi xảy ra khi xóa Tour");
+    }
   };
   const displayedTour = tours.slice(
     (currentPage - 1) * itemsPerPage,
@@ -85,6 +115,9 @@ const TourManage = () => {
                             Giá vé: {tour.price.toLocaleString()} VNĐ
                           </p>
                           <p className="vouncher-info">
+                            Trạng thái: {tour.status}
+                          </p>
+                          <p className="vouncher-info">
                             Thời gian đi:{" "}
                             {dayjs(tour.timeStart).format("DD/MM/YYYY HH:mm")}
                           </p>
@@ -104,9 +137,7 @@ const TourManage = () => {
                       </button>
                       <button
                         className="buttonUse"
-                        onClick={() => {
-                          deleteItem(tour.id);
-                        }}
+                        onClick={deleteItem(tour.slug)}
                       >
                         Xóa
                       </button>

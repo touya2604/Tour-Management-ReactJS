@@ -101,11 +101,14 @@ const TourUpdate = () => {
         images: JSON.stringify(tour.images),
       };
 
-      const response = await fetch(`http://localhost:3000/tours/${slug}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedTour),
-      });
+      const response = await fetch(
+        `http://localhost:3000${systemConfig.prefixAdmin}/tours/${slug}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedTour),
+        }
+      );
 
       if (!response.ok) throw new Error("Lỗi khi cập nhật tour");
 
