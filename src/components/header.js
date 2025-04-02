@@ -69,13 +69,14 @@ const Header = ({ checkLog }) => {
           </button>
         )}
 
-        {role === "admin" ? (
+        {role === "admin" && (
           <button
             onClick={() => navigate(`${systemConfig.prefixAdmin}/tour-manage`)}
           >
             Quản lý tour
           </button>
-        ) : (
+        )}
+        {role === "customer" && (
           <button onClick={() => navigate("/cart")}>Giỏ hàng</button>
         )}
 
