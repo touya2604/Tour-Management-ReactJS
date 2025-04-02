@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/tourcrud.scss";
 import dayjs from "dayjs";
@@ -16,6 +16,7 @@ const VouncherAdd = () => {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const handleChange = (event, field) => {
     setVouncher((prev) => ({
@@ -28,8 +29,9 @@ const VouncherAdd = () => {
   };
 
   const handleAddNew = async () => {
+    setError("");
     if (!vouncher.discount || !vouncher.minAmount || !vouncher.expire) {
-      alert("Vui lòng nhập đầy đủ thông tin!");
+      setError("Vui lòng nhập đầy đủ thông tin!");
       return;
     }
 
@@ -78,6 +80,13 @@ const VouncherAdd = () => {
       <div className="container mt-4 p-5 rounded custom-container">
         <div className="container p-4 rounded shadow-lg custom-boder">
           <h1 className="text-center custom-text">Tạo mới Voucher</h1>
+          {error && (
+            <p
+              style={{ color: "red", textAlign: "center", fontSize: "larger" }}
+            >
+              {error}
+            </p>
+          )}
           <div className="row">
             <div className="col-md-6 mx-auto">
               <form>
@@ -85,6 +94,7 @@ const VouncherAdd = () => {
                   <label className="form-label">Phần trăm giảm giá</label>
                   <input
                     type="number"
+                    min="0"
                     className="form-control"
                     value={vouncher.discount}
                     onChange={(e) => handleChange(e, "discount")}
@@ -92,8 +102,15 @@ const VouncherAdd = () => {
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Số tiền tối thiểu</label>
+                  <br />
+                  <p className="form-label">
+                    <i>
+                      Nhập theo định dạng: 1.00 - 1 tr; 13.0 - 13tr; 0;50 - 500k
+                    </i>
+                  </p>
                   <input
                     type="number"
+                    min="1"
                     className="form-control"
                     value={vouncher.minAmount}
                     onChange={(e) => handleChange(e, "minAmount")}
@@ -102,7 +119,7 @@ const VouncherAdd = () => {
                 <div className="mb-3">
                   <label className="form-label">Thời gian hết hạn</label>
                   <input
-                    type="date"
+                    type="datetime-local"
                     className="form-control"
                     value={vouncher.expire}
                     onChange={(e) => handleChange(e, "expire")}

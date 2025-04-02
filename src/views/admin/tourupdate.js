@@ -90,7 +90,7 @@ const TourUpdate = () => {
   const handleRemoveImage = (index) => {
     setTour((prev) => ({
       ...prev,
-      images: prev.images.filter((_, i) => i !== index), // Xóa ảnh theo index
+      images: prev.images.filter((_, i) => i !== index),
     }));
   };
 
@@ -138,7 +138,7 @@ const TourUpdate = () => {
               <div className="mb-3">
                 <label className="form-label">Thời gian đi:</label>
                 <input
-                  type="date"
+                  type="datetime-local"
                   className="form-control"
                   value={
                     tour.timeStart
@@ -151,7 +151,7 @@ const TourUpdate = () => {
               <div className="mb-3">
                 <label className="form-label">Giá vé:</label>
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
                   min="0"
                   value={tour.price}
@@ -161,7 +161,7 @@ const TourUpdate = () => {
               <div className="mb-3">
                 <label className="form-label">Giảm giá (%):</label>
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
                   min="0"
                   max="100"
@@ -191,7 +191,7 @@ const TourUpdate = () => {
               <div className="mb-3">
                 <label className="form-label">Số lượng khách:</label>
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
                   min="1"
                   value={tour.stock}
@@ -207,7 +207,15 @@ const TourUpdate = () => {
                   onChange={(e) => handleChange(e, "information")}
                 />
               </div>
-
+              <div className="mb-3">
+                <label className="form-label">Lịch trình:</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={tour.schedule}
+                  onChange={(e) => handleChange(e, "schedule")}
+                />
+              </div>
               <div className="mb-3">
                 <label className="form-label">Hình ảnh:</label>
                 <input

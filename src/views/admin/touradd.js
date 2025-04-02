@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../styles/tourcrud.scss";
 import dayjs from "dayjs";
 import * as systemConfig from "../../config/system";
+import { useNavigate } from "react-router-dom";
 
 const TourAdd = () => {
   const [images, setImages] = useState([]);
@@ -25,7 +26,8 @@ const TourAdd = () => {
     updatedAt: new Date().toISOString(),
     category_title: "",
   });
-
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -80,11 +82,19 @@ const TourAdd = () => {
 
   const handleAddNew = async () => {
     if (!tour.title.trim()) {
-      alert("Vui lòng nhập địa điểm!");
+      setError("Vui lòng nhập địa điểm!");
       return;
     }
     if (tour.price <= 0) {
-      alert("Giá vé phải lớn hơn 0!");
+      setError("Giá vé phải lớn hơn 0!");
+      return;
+    }
+    if (tour.stock <= 0) {
+      setError("Vui lòng nhập số lượng người của tour");
+      return;
+    }
+    if (!tour.timeStart.trim()) {
+      setError("Vui lòng nhập thời gian đi!");
       return;
     }
 
@@ -107,11 +117,14 @@ const TourAdd = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3000/tours", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newTour),
-      });
+      const response = await fetch(
+        `http://localhost:3000${systemConfig.prefixAdmin}/tours`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newTour),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -135,6 +148,7 @@ const TourAdd = () => {
 
       setImages([]);
       alert("Tạo mới thành công!");
+      navigate(`${systemConfig.prefixAdmin}/tour-manage`);
     } catch (error) {
       console.error("Lỗi khi thêm tour:", error);
       alert(error.message || "Có lỗi xảy ra khi thêm tour!");
@@ -145,6 +159,11 @@ const TourAdd = () => {
     <div className="container mt-4 p-5 rounded custom-container">
       <div className="container p-4 rounded shadow-lg custom-boder">
         <h1 className="text-center custom-text">Tạo mới Tour</h1>
+        {error && (
+          <p style={{ color: "red", textAlign: "center", fontSize: "larger" }}>
+            {error}
+          </p>
+        )}
         <div className="row">
           <div className="col-md-6">
             <form>
@@ -160,7 +179,7 @@ const TourAdd = () => {
               <div className="mb-3">
                 <label className="form-label">Thời gian đi:</label>
                 <input
-                  type="date"
+                  type="datetime-local"
                   className="form-control"
                   value={tour.timeStart}
                   onChange={(e) => handleChange(e, "timeStart")}
@@ -169,7 +188,7 @@ const TourAdd = () => {
               <div className="mb-3">
                 <label className="form-label">Giá vé:</label>
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
                   min="0"
                   value={tour.price}
@@ -179,7 +198,7 @@ const TourAdd = () => {
               <div className="mb-3">
                 <label className="form-label">Giảm giá (%):</label>
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
                   min="0"
                   max="100"
@@ -209,7 +228,7 @@ const TourAdd = () => {
               <div className="mb-3">
                 <label className="form-label">Số lượng khách:</label>
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
                   min="1"
                   value={tour.stock}
@@ -223,6 +242,15 @@ const TourAdd = () => {
                   className="form-control"
                   value={tour.information}
                   onChange={(e) => handleChange(e, "information")}
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Lịch trình:</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={tour.schedule}
+                  onChange={(e) => handleChange(e, "schedule")}
                 />
               </div>
 

@@ -93,10 +93,12 @@ const Cart = () => {
       alert("Số điện thoại không hợp lệ");
       return;
     }
-    if (!isNaN(fullName)) {
-      alert("Họ và tên không hợp lệ");
+    const nameRegex = /^[A-Za-zÀ-ỹ\s]+$/;
+    if (!nameRegex.test(fullName)) {
+      alert("Tên không được chứa số hoặc ký tự đặc biệt!");
       return;
     }
+
     const selectedCartItems = cart.filter((item) => selectedItems[item.id]);
     if (selectedCartItems.length === 0) {
       alert("Vui lòng chọn ít nhất một sản phẩm để đặt hàng.");

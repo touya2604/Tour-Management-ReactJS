@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/tour.scss";
-import * as systemConfig from "../config/system";
+// import * as systemConfig from "../config/system";
 import { Pagination } from "react-bootstrap";
 const TourList = () => {
   const itemsPerPage = 6;
   const [tours, setTours] = useState([]);
-  const [cates, setCate] = useState([]);
+  // const [cates, setCate] = useState([]);
 
   const [filteredTours, setFilteredTours] = useState([]);
   const [loading, setLoading] = useState(true);

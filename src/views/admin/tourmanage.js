@@ -42,6 +42,7 @@ const TourManage = () => {
     setCurrentPage(pageNumber);
   };
   const deleteItem = (id) => {
+    // const check = window.confirm("Có chắc rằng muốn xóa đi Tour này không");
     const updateTour = tours.filter((item) => item.id !== id);
     setTours(updateTour);
   };

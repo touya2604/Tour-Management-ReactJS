@@ -1,24 +1,80 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/sign.scss";
+import * as systemConfig from "../config/system";
 
-const SignInForm = ({ setRole }) => {
+const SignInForm = () => {
   const [fullName, setFullName] = useState("");
+  const [emails, setEmails] = useState([]);
   const [email, setEmail] = useState("");
+  const [phones, setPhones] = useState([]);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000${systemConfig.prefixAdmin}/customers`
+        );
 
+        if (!response.ok) throw new Error("Lỗi khi lấy danh sách khách hàng");
+
+        const data = await response.json();
+        const User = Array.isArray(data.data) ? data.data : [];
+        const UserPhone = User.map((pho) => pho.phone);
+        const UserEmail = User.map((mail) => mail.email);
+        console.log(UserEmail);
+        setEmails(UserEmail);
+        setPhones(UserPhone);
+        // console.log(User);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchCustomers();
+  }, []);
   const handleSignUp = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
+    if (emails.includes(email)) {
+      setError("Email đã tồn tại");
+      setLoading(false);
+      return;
+    }
+    if (phones.includes(phone)) {
+      setError("Số điện thoại đã tồn tại");
+      setLoading(false);
+      return;
+    }
+    if (password.length < 6) {
+      setError("Mật khẩu phải có ít nhất 6 ký tự");
+      setLoading(false);
+      return;
+    }
     if (password !== confirmPassword) {
       setError("Mật khẩu xác nhận không khớp!");
+      setLoading(false);
+      return;
+    }
+    const nameRegex = /^[A-Za-zÀ-ỹ\s]+$/;
+    if (!nameRegex.test(fullName)) {
+      setError("Tên không được chứa số hoặc ký tự đặc biệt!");
+      setLoading(false);
+      return;
+    }
+
+    if (!phone.startsWith("0")) {
+      setError("Số điện thoại phải bắt đầu bằng 0!");
+      setLoading(false);
+      return;
+    }
+    if (phone.length !== 10) {
+      setError("Số điện thoại phải có 10 chữ số!");
       setLoading(false);
       return;
     }
@@ -44,7 +100,7 @@ const SignInForm = ({ setRole }) => {
       alert("Đăng ký thành công!");
       navigate("/logIn");
     } catch (err) {
-      setError("Đăng ký thất bại. Vui lòng thử lại!");
+      alert("Đăng ký thất bại. Vui lòng thử lại!");
     }
 
     setLoading(false);

@@ -16,7 +16,11 @@ const Vouncher = () => {
           `http://localhost:3000${systemConfig.prefixAdmin}/vouchers`
         );
         const data = await response.json();
-        setVouncherList(Array.isArray(data.data) ? data.data : []);
+        const filteredVoucher = Array.isArray(data.data)
+          ? data.data.filter((item) => item.status === "Active")
+          : [];
+        // console.log(filteredVoucher);
+        setVouncherList(filteredVoucher);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu:", error);
       } finally {

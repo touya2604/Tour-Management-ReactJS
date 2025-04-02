@@ -9,6 +9,8 @@ const VoucherUpdate = () => {
   const [voucher, setTour] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
+  const [statusList, setStatusList] = useState([]);
+
   useEffect(() => {
     const fetchTours = async () => {
       try {
@@ -19,7 +21,16 @@ const VoucherUpdate = () => {
 
         const data = await response.json();
         console.log("API response:", data);
+        const statuses = [
+          ...new Set(
+            data.data
+              .filter((item) => item.status !== "Deleted")
+              .map((item) => item.status)
+          ),
+        ];
 
+        console.log(statuses);
+        setStatusList(statuses);
         const filteredVouncher = Array.isArray(data.data)
           ? data.data.find((v) => String(v.id) === id) || null
           : null;
@@ -84,7 +95,7 @@ const VoucherUpdate = () => {
       }
 
       alert("Cập nhật thành công!");
-      navigate(`${systemConfig.prefixAdmin}/voucher-manage`);
+      navigate(`${systemConfig.prefixAdmin}/vouchers`);
     } catch (error) {
       console.error("Lỗi khi cập nhật voucher:", error);
       alert("Có lỗi xảy ra khi cập nhật voucher!");
@@ -101,12 +112,17 @@ const VoucherUpdate = () => {
               <form>
                 <div className="mb-3">
                   <label className="form-label">Trạng thái</label>
-                  <input
-                    type="text"
+                  <select
                     className="form-control"
                     value={voucher.status}
                     onChange={(e) => handleChange(e, "status")}
-                  />
+                  >
+                    {statusList.map((cate, index) => (
+                      <option key={index} value={cate}>
+                        {cate}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Giảm giá</label>

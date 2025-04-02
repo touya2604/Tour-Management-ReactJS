@@ -13,6 +13,8 @@ const VouncherManage = () => {
   const [loading, setLoading] = useState(true);
   const itemsPerPage = 3;
   const navigate = useNavigate();
+  const [totalPages, setTotalPages] = useState(0);
+
   useEffect(() => {
     const fetchVounchers = async () => {
       try {
@@ -20,10 +22,23 @@ const VouncherManage = () => {
           `http://localhost:3000${systemConfig.prefixAdmin}/vouchers`
         );
         const data = await response.json();
-        setVouncherList(Array.isArray(data.data) ? data.data : []);
+        if (Array.isArray(data.data)) {
+          const validVouchers = data.data.filter(
+            (item) => item.status !== "Deleted"
+          );
+          setVouncherList(validVouchers);
+          setTotalPages(Math.ceil(validVouchers.length / itemsPerPage));
+        } else {
+          setVouncherList([]);
+          setTotalPages(0);
+        }
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu:", error);
-        setVouncherList(vouchers);
+        const validVouchers = vouchers.filter(
+          (item) => item.status !== "Deleted"
+        );
+        setVouncherList(validVouchers);
+        setTotalPages(Math.ceil(validVouchers.length / itemsPerPage));
       } finally {
         setLoading(false);
       }
@@ -35,17 +50,48 @@ const VouncherManage = () => {
     return <div className="loading">Đang tải Vouncher...</div>;
   }
 
-  const totalPages = Math.ceil(vouncherList.length / itemsPerPage);
-
   const handlePageChange = (pageNumber) => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
     setCurrentPage(pageNumber);
   };
 
-  const deleteVoucher = (id) => {
-    let newVouncherList = vouncherList.filter((item) => item.id !== id);
-    setVouncherList(newVouncherList);
+  const deleteVoucher = (id) => async () => {
+    // console.log("HI");
+    const check = window.confirm("Có chắc rằng muốn xóa đi voucher này không");
+    if (!check) {
+      return;
+    }
+    const deletedVoucher = vouncherList.find((item) => item.id === id);
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000${systemConfig.prefixAdmin}/vouchers/${id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...deletedVoucher, status: "Deleted" }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Lỗi khi cập nhật voucher: ${errorText}`);
+      }
+      alert("Xóa thành công");
+      let newVouncherList = vouncherList.filter((item) => item.id !== id);
+      setVouncherList(newVouncherList);
+      setTotalPages(Math.ceil(newVouncherList.length / itemsPerPage));
+
+      navigate(`${systemConfig.prefixAdmin}/vouchers`);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật voucher:", error);
+      alert("Có lỗi xảy ra khi cập nhật voucher!");
+    }
   };
+
+  const currentVouchers = vouncherList
+    .filter((vouncher) => vouncher.status !== "Deleted")
+    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <>
@@ -64,10 +110,10 @@ const VouncherManage = () => {
           </div>
           <div className="vouncher-list-up">
             {vouncherList.length === 0 ? (
-              <p>Đang tải dữ liệu...</p>
+              <p>Không có dữ liệu Vouncher.</p>
             ) : (
               <div id="vouncher-detail">
-                {vouncherList.map((vouncher) => (
+                {currentVouchers.map((vouncher) => (
                   <div key={vouncher.id} id="vouncher-item">
                     <div id="image-title">
                       <img src={logoVouncher} alt="logoVouncher" />
@@ -76,8 +122,23 @@ const VouncherManage = () => {
                           Giảm tối đa: {vouncher.discount}%
                         </h2>
                         <div>
+                          {/* {console.log(typeof Number(vouncher.minAmount))} */}
+                          {parseFloat(vouncher.minAmount) < 1.0 ? (
+                            // {console.log(vouncher.minAmount)}
+                            <>
+                              <p className="vouncher-info">
+                                Đơn tối thiểu: đ
+                                {parseFloat(vouncher.minAmount) * 10}
+                                00.000k
+                              </p>
+                            </>
+                          ) : (
+                            <p className="vouncher-info">
+                              Đơn tối thiểu: đ{vouncher.minAmount}0.000tr
+                            </p>
+                          )}
                           <p className="vouncher-info">
-                            Đơn tối thiểu: đ{vouncher.minAmount}tr
+                            Trạng thái: {vouncher.status}
                           </p>
                           <p className="vouncher-info">
                             Hết hạn sau:{" "}
@@ -101,7 +162,7 @@ const VouncherManage = () => {
                       </button>
                       <button
                         className="buttonUse"
-                        onClick={() => deleteVoucher(vouncher.id)}
+                        onClick={deleteVoucher(vouncher.id)}
                       >
                         Xóa
                       </button>
@@ -111,25 +172,27 @@ const VouncherManage = () => {
               </div>
             )}
           </div>
-          <Pagination className="pagination-custom">
-            <Pagination.Prev
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            />
-            {[...Array(totalPages).keys()].map((number) => (
-              <Pagination.Item
-                key={number + 1}
-                active={number + 1 === currentPage}
-                onClick={() => handlePageChange(number + 1)}
-              >
-                {number + 1}
-              </Pagination.Item>
-            ))}
-            <Pagination.Next
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            />
-          </Pagination>
+          {totalPages > 0 && (
+            <Pagination className="pagination-custom">
+              <Pagination.Prev
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              />
+              {[...Array(totalPages).keys()].map((number) => (
+                <Pagination.Item
+                  key={number + 1}
+                  active={number + 1 === currentPage}
+                  onClick={() => handlePageChange(number + 1)}
+                >
+                  {number + 1}
+                </Pagination.Item>
+              ))}
+              <Pagination.Next
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              />
+            </Pagination>
+          )}
         </div>
       </div>
     </>
