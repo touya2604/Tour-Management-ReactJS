@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/ReactJSDemo/static/css/main.3bd2c351.css",
-    "main.js": "/ReactJSDemo/static/js/main.236a6784.js",
-    "static/js/453.2b8379a8.chunk.js": "/ReactJSDemo/static/js/453.2b8379a8.chunk.js",
-    "static/media/background.jpg": "/ReactJSDemo/static/media/background.ef0ac833efe188c85ad2.jpg",
-    "static/media/logoHead.png": "/ReactJSDemo/static/media/logoHead.39ae2cb548f8a2362a12.png",
-    "static/media/logoFoot.png": "/ReactJSDemo/static/media/logoFoot.8b16716898e8ebe64f56.png",
-    "index.html": "/ReactJSDemo/index.html",
-    "main.3bd2c351.css.map": "/ReactJSDemo/static/css/main.3bd2c351.css.map",
-    "main.236a6784.js.map": "/ReactJSDemo/static/js/main.236a6784.js.map",
-    "453.2b8379a8.chunk.js.map": "/ReactJSDemo/static/js/453.2b8379a8.chunk.js.map"
+    "main.css": "/Tour-Management-ReactJS/static/css/main.38a1e222.css",
+    "main.js": "/Tour-Management-ReactJS/static/js/main.a9bea590.js",
+    "static/js/453.2b8379a8.chunk.js": "/Tour-Management-ReactJS/static/js/453.2b8379a8.chunk.js",
+    "static/media/background.jpg": "/Tour-Management-ReactJS/static/media/background.ef0ac833efe188c85ad2.jpg",
+    "static/media/logoHead.png": "/Tour-Management-ReactJS/static/media/logoHead.39ae2cb548f8a2362a12.png",
+    "static/media/logoFoot.png": "/Tour-Management-ReactJS/static/media/logoFoot.8b16716898e8ebe64f56.png",
+    "index.html": "/Tour-Management-ReactJS/index.html",
+    "main.38a1e222.css.map": "/Tour-Management-ReactJS/static/css/main.38a1e222.css.map",
+    "main.a9bea590.js.map": "/Tour-Management-ReactJS/static/js/main.a9bea590.js.map",
+    "453.2b8379a8.chunk.js.map": "/Tour-Management-ReactJS/static/js/453.2b8379a8.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.3bd2c351.css",
-    "static/js/main.236a6784.js"
+    "static/css/main.38a1e222.css",
+    "static/js/main.a9bea590.js"
   ]
 }
